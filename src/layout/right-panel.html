@@ -1,6 +1,26 @@
 <div class="right-panel">
-    <h2>할 일 상세</h2>
-    <div id="task-details">
-
+    <div class="right-panel-title">
+        <div class="title-wrapper">
+            <h2 class="title-h2" id="task-list-title">-</h2>
+            <button id="add-task-button">+</button>
+        </div>
+        <div class="pomodoro-count-wrapper">
+            <span class="pomodoro-current" id="pomodoro-current">0</span>
+            <span>/</span>
+            <span class="pomodoro-total" id="pomodoro-total">0</span>
+        </div>
+    </div>
+    <ul id="task-list">
+    </ul>
+    <div id="task-input-view" style="display:none;">
+        <input type="text" id="task-input" placeholder="새로운 할 일을 입력하세요." value="새로운 할 일 입력" />
+        <div class="pomodoro-input">
+            <label for="pomodoro-input">포모도로 시간</label>
+            <input type="number" id="pomodoro-input" value="25" max="60" min="1"/>
+        </div>
+        <div class="task-btn-group">
+            <button id="save-task-button">저장</button>
+            <button id="cancel-task-button">취소</button>
+        </div>
     </div>
 </div>

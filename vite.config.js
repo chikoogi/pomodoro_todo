@@ -11,4 +11,12 @@ export default defineConfig({
       },
     },
   },
+  module: {
+    rules: [
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        type: "src/assets/icon/*",
+      },
+    ],
+  },
 });

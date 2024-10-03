@@ -4,7 +4,6 @@ export let TODO_LIST = [
     name: "회사 업무",
     tasks: [
       { text: "A 프로젝트 회의", pomodoroTime: 25, pomodoroCount: 3, status: "미완료" },
-
       { text: "보고서 작성", pomodoroTime: 25, pomodoroCount: 1, status: "완료" },
     ],
   },

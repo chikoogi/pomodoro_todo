@@ -16,6 +16,10 @@ export function renderTodoLists(data) {
       showInputView(todoLists, setTodoLists);
     }
   });
+
+  /*@TODO 임시 클릭 */
+  const firstItem = document.querySelector("#folder-list li");
+  firstItem.click();
 }
 
 function showInputView(todoLists, setTodoLists) {
@@ -32,11 +36,11 @@ function showInputView(todoLists, setTodoLists) {
         addTodoList(todoLists, newFolderName, setTodoLists); // 목록 추가
       }
 
-      folderInput.value = "";
+      folderInput.value = "새로운 목록";
       folderInputView.style.display = "none";
       folderInput.removeEventListener("keydown", handleKeyDown);
     } else if (e.key === "Escape") {
-      folderInput.value = "";
+      folderInput.value = "새로운 목록";
       folderInputView.style.display = "none";
       folderInput.removeEventListener("keydown", handleKeyDown);
     }
@@ -58,7 +62,6 @@ function deleteTodoList(todoLists, folderId, setTodoLists) {
   setTodoLists(updatedTodoLists); // 상태 반영
 }
 function updateFolderList(todoLists, setTodoLists) {
-  console.log(todoLists);
   const folderListElement = document.getElementById("folder-list");
   folderListElement.innerHTML = "";
 
@@ -90,6 +93,6 @@ function updateFolderList(todoLists, setTodoLists) {
     btnItem.appendChild(countBtn);
     countBtn.textContent = list.tasks.length.toString();
 
-    listItem.addEventListener("click", () => renderTaskDetails(list.tasks));
+    listItem.addEventListener("click", () => renderTaskDetails(list));
   });
 }

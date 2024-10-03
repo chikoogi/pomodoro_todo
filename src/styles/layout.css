@@ -58,7 +58,6 @@ body, html {
 
 }
 
-
 #folder-list li {
     display: flex;
     justify-content: space-between;
@@ -74,4 +73,28 @@ body, html {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
+}
+
+.right-panel-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.title-wrapper{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: start;
 }

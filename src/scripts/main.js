@@ -1,8 +1,6 @@
 import "../styles/layout.css";
 import { loadFromLocalStorage, saveToLocalStorage } from "./services/localStorage.js";
 import { renderTodoLists } from "./render/renderTodoList.js";
-import { TODO_LIST } from "./services/data.js";
-import { renderTodoListsTest } from "./render/renderTodoListTest.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   /* 레이아웃 렌더링 */
