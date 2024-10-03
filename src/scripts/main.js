@@ -1,7 +1,8 @@
 import "../styles/layout.css";
-import { loadFromLocalStorage } from "./services/localStorage.js";
+import { loadFromLocalStorage, saveToLocalStorage } from "./services/localStorage.js";
 import { renderTodoLists } from "./render/renderTodoList.js";
 import { TODO_LIST } from "./services/data.js";
+import { renderTodoListsTest } from "./render/renderTodoListTest.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   /* 레이아웃 렌더링 */
@@ -23,7 +24,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 할 일 목록 렌더링
   renderTodoLists(todoLists);
-
-  // 변경사항이 있을 때 로컬 스토리지에 저장하는 로직 (예시)
-  // saveToLocalStorage(todoLists);
 });

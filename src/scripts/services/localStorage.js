@@ -7,5 +7,5 @@ export function loadFromLocalStorage() {
 
 // 로컬 스토리지에 데이터 저장하기
 export function saveToLocalStorage(todoLists) {
-  localStorage.setItem("todoLists", JSON.stringify(todoLists));
+  localStorage.setItem("TODO_LIST", JSON.stringify(todoLists));
 }
