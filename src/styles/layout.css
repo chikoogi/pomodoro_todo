@@ -1,0 +1,55 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: white;
+    box-sizing: border-box;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 전체 화면에 맞춤 */
+}
+
+/* 헤더 스타일 */
+#header {
+    background-color: #333;
+    text-align: center;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* 메인 콘텐츠 영역 (좌우 패널) */
+#content {
+    display: flex;
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 왼쪽 패널 (목록) */
+#left-panel {
+    flex: 1;
+    background-color: #444;
+    padding: 20px;
+    margin-right: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 오른쪽 패널 (할일 입력) */
+#right-panel {
+    flex: 2;
+    background-color: #555;
+    padding: 20px;
+    margin-left: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
