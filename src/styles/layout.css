@@ -129,11 +129,18 @@ body, html {
     justify-content: start;
 }
 
-.task-pomodoro-item{
+.task-pomodoro-time{
     color: #888888;
 }
 
 .task-pomodoro-count{
     color: red;
     font-size: 14px;
+}
+
+.task-item-right{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: end;
 }

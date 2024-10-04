@@ -41,7 +41,7 @@ function showInputView(todoLists, setTodoLists) {
       if (newFolderName === "") return;
 
       const newTodo = {
-        id: Date.now().toString(), // 새로운 고유 ID
+        id: Date.now().toString(),
         name: newFolderName,
         tasks: [],
       };
