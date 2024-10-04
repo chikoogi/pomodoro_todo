@@ -116,6 +116,7 @@ function updateFolderList(todoLists, setTodoLists) {
       selectedFolderItem = folderItem;
 
       renderTaskDetails(list, (tasks) => {
+        console.log(tasks);
         todoLists.splice(listIndex, 1, {
           ...list,
           tasks: tasks,

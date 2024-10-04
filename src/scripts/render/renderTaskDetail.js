@@ -6,16 +6,15 @@ export function renderTaskDetails(item, setItems) {
   const todoItem = item;
 
   const title = todoItem.name;
-  let tasks = todoItem.tasks;
+  updateTaskTitle(title);
 
+  let tasks = todoItem.tasks;
   const setTasks = (updateTasks) => {
     tasks = updateTasks;
     setItems(tasks);
     updateTaskList(tasks, setTasks);
     updatePomodoroStatus(tasks);
   };
-
-  updateTaskTitle(title);
   updateTaskList(tasks, setTasks);
 
   document.getElementById("add-task-button").onclick = () => {
@@ -51,7 +50,7 @@ function showTaskInputView(tasks, setTasks, editTask = null) {
 
     if (editTask) {
       // 수정 모드일 때
-      const findIndex = tasks.findIndex((v) => v.id);
+      const findIndex = tasks.findIndex((v) => v.id === editTask.id);
       tasks.splice(findIndex, 1, {
         ...editTask,
         name: taskName,
@@ -84,6 +83,10 @@ function updateTaskTitle(title) {
   taskTitleElement.textContent = title;
 }
 
+function getTaskTitle() {
+  return document.getElementById("task-list-title").textContent;
+}
+
 function updatePomodoroStatus(tasks) {
   const pomodoroTotalElement = document.getElementById("pomodoro-total");
   pomodoroTotalElement.innerHTML = tasks.length;
@@ -99,6 +102,7 @@ function updateTaskList(tasks, setTasks) {
   tasks.forEach((task, taskIndex) => {
     const taskItem = document.createElement("div");
     taskListElement.appendChild(taskItem);
+    taskItem.id = `task-${task.id}`;
     taskItem.className = "task-item";
     if (task.completed) taskItem.classList.add("completed");
     else taskItem.classList.remove("completed");
@@ -154,20 +158,19 @@ function updateTaskList(tasks, setTasks) {
       countDownTimerEl.className = "countdown-timer";
       countDownTimerEl.style.display = "none";
 
-      let intervalTimer = null;
-
       const playBtnEl = document.createElement("button");
       taskItemRight.appendChild(playBtnEl);
       playBtnEl.innerHTML = `&gt;`;
       playBtnEl.className = "play-btn";
-      playBtnEl.onclick = () =>
-        (intervalTimer = startTimer(task, taskItemRight, () => {
+      playBtnEl.onclick = () => {
+        startTimer(task, () => {
           tasks.splice(taskIndex, 1, {
             ...task,
             pomodoroCount: ++task.pomodoroCount,
           });
           setTasks([...tasks]);
-        }));
+        });
+      };
 
       const stopBtnEl = document.createElement("button");
       taskItemRight.appendChild(stopBtnEl);
@@ -175,7 +178,7 @@ function updateTaskList(tasks, setTasks) {
       stopBtnEl.className = "stop-btn";
       stopBtnEl.style.display = "none";
       stopBtnEl.onclick = () => {
-        stopTimer(task, taskItemRight);
+        stopTimer(task);
       };
     }
 
@@ -183,6 +186,7 @@ function updateTaskList(tasks, setTasks) {
     taskItemRight.appendChild(deleteBtnEl);
     deleteBtnEl.innerHTML = `X`;
     deleteBtnEl.onclick = () => {
+      stopTimer(task);
       tasks.splice(taskIndex, 1); // 해당
       setTasks(tasks);
     };
@@ -190,29 +194,44 @@ function updateTaskList(tasks, setTasks) {
 }
 
 /* 참고 https://www.w3schools.com/howto/howto_js_countdown.asp */
-function startTimer(task, parentEl, onIncreaseCount) {
-  const playBtnEl = parentEl.querySelector(".play-btn");
-  const stopBtnEl = parentEl.querySelector(".stop-btn");
-  const countDownTimerEl = parentEl.querySelector(".countdown-timer");
-
-  playBtnEl.style.display = "none";
-  stopBtnEl.style.display = "block";
-  countDownTimerEl.style.display = "inline-block";
-
-  if (ACTIVE_TIMER) {
-    alert("이미 실행 중");
-    return;
+function startTimer(task, onIncreaseCount, restart = false) {
+  if (restart) {
+    if (ACTIVE_TIMER) {
+      ACTIVE_TIMER = {
+        task,
+        intervalTimer: null,
+        remainingTime: ACTIVE_TIMER.remainingTime,
+      };
+    }
+  } else {
+    if (ACTIVE_TIMER) {
+      alert("이미 실행 중");
+      return;
+    } else {
+      ACTIVE_TIMER = {
+        task,
+        intervalTimer: null,
+        remainingTime: task.pomodoroTime * 60,
+      };
+    }
   }
 
-  let pomodoroTime = task.pomodoroTime;
+  const taskEl = document.getElementById("task-list").querySelector(`#task-${task.id}`);
 
-  ACTIVE_TIMER = {
-    task,
-    intervalTimer: null,
-    remainingTime: pomodoroTime,
-  };
+  const taskPlayBtnEl = taskEl.querySelector(".play-btn");
+  const taskStopBtnEl = taskEl.querySelector(".stop-btn");
+  const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer");
+  const headerPauseBtn = document.getElementById("header-pause-button");
+  const headerPlayBtn = document.getElementById("header-play-button");
 
-  updateHeader(task, pomodoroTime);
+  taskPlayBtnEl.style.display = "none";
+  taskStopBtnEl.style.display = "block";
+  taskCountDownTimerEl.style.display = "inline-block";
+  headerPauseBtn.style.display = "block";
+  headerPlayBtn.style.display = "none";
+
+  taskCountDownTimerEl.textContent = getMMSSFormat(ACTIVE_TIMER.remainingTime);
+  updateHeader(task, ACTIVE_TIMER.remainingTime, onIncreaseCount);
 
   const intervalTimer = setInterval(() => {
     if (ACTIVE_TIMER.remainingTime <= 0) {
@@ -223,50 +242,68 @@ function startTimer(task, parentEl, onIncreaseCount) {
       return;
     }
 
-    countDownTimerEl.textContent = getMMSSFormat(ACTIVE_TIMER.remainingTime);
-    updateHeader(task, ACTIVE_TIMER.remainingTime);
     ACTIVE_TIMER.remainingTime--;
-  }, 1000);
-
+    taskCountDownTimerEl.textContent = getMMSSFormat(ACTIVE_TIMER.remainingTime);
+    updateHeader(task, ACTIVE_TIMER.remainingTime, onIncreaseCount);
+  }, 500);
   ACTIVE_TIMER.intervalTimer = intervalTimer;
 
   return intervalTimer;
 }
 
-function stopTimer(task, parentEl) {
-  const playBtnEl = parentEl.querySelector(".play-btn");
-  const stopBtnEl = parentEl.querySelector(".stop-btn");
-  const countDownTimerEl = parentEl.querySelector(".countdown-timer");
+function stopTimer(task) {
+  const taskEl = document.getElementById("task-list").querySelector(`#task-${task.id}`);
 
-  playBtnEl.style.display = "block";
-  stopBtnEl.style.display = "none";
-  countDownTimerEl.style.display = "none";
+  const playBtnEl = taskEl.querySelector(".play-btn");
+  const stopBtnEl = taskEl.querySelector(".stop-btn");
+  const countDownTimerEl = taskEl.querySelector(".countdown-timer");
+
+  if (playBtnEl) playBtnEl.style.display = "block";
+  if (stopBtnEl) stopBtnEl.style.display = "none";
+  if (countDownTimerEl) countDownTimerEl.style.display = "none";
 
   if (ACTIVE_TIMER && ACTIVE_TIMER.task === task) {
     clearInterval(ACTIVE_TIMER.intervalTimer);
-    updateHeader(null, 0); // 헤더 초기화
+    clearHeaderTimer(); // 헤더 초기화
     ACTIVE_TIMER = null; // 타이머 정보 초기화
   }
 }
 
-function pauseTimer(task) {}
+function pauseTimer(task) {
+  if (ACTIVE_TIMER && ACTIVE_TIMER.task === task) {
+    const pauseBtn = document.getElementById("header-pause-button");
+    const playBtn = document.getElementById("header-play-button");
 
-function updateHeader(task, pomodoroTime) {
+    pauseBtn.style.display = "none";
+    playBtn.style.display = "block";
+    clearInterval(ACTIVE_TIMER.intervalTimer); // 타이머 일시정지
+    console.log("남은 시간:", ACTIVE_TIMER.remainingTime);
+  }
+}
+
+function updateHeader(task, pomodoroTime, onIncreaseCount) {
+  const headerTitle = document.getElementById("header-title");
+
+  const headerTimer = document.getElementById("header-timer");
+  const taskTitle = document.getElementById("header-task-title");
+  const remainTime = document.getElementById("header-remaining-time");
+  const pauseBtn = document.getElementById("header-pause-button");
+  const stopBtn = document.getElementById("header-stop-button");
+  const playBtn = document.getElementById("header-play-button");
+
+  headerTitle.style.display = "none";
+  headerTimer.style.display = "block";
+  taskTitle.textContent = `${getTaskTitle()} / ${task.name}`;
+  remainTime.textContent = getMMSSFormat(pomodoroTime);
+
+  stopBtn.onclick = () => stopTimer(task);
+  pauseBtn.onclick = () => pauseTimer(task);
+  playBtn.onclick = () => startTimer(task, onIncreaseCount, true);
+}
+
+function clearHeaderTimer() {
   const headerTitle = document.getElementById("header-title");
   const headerTimer = document.getElementById("header-timer");
-  const taskTitle = document.getElementById("task-title");
-  const remainTime = document.getElementById("remaining-time");
-
-  if (task) {
-    headerTitle.style.display = "none";
-    headerTimer.style.display = "block";
-    taskTitle.textContent = `${task.name} / ${task.pomodoroTime}m`;
-    remainTime.textContent = getMMSSFormat(pomodoroTime);
-    // taskTitle.style.display = "block";
-    // remainTime.style.display = "block";
-  } else {
-    // 타이머가 없을 때 기본 상태로 돌아가기
-    headerTitle.style.display = "block";
-    headerTimer.style.display = "none";
-  }
+  headerTitle.style.display = "block";
+  headerTimer.style.display = "none";
 }

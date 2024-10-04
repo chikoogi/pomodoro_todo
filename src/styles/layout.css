@@ -12,6 +12,10 @@ body, html {
     box-sizing: border-box;
 }
 
+button {
+    cursor: pointer;
+}
+
 #app {
     display: flex;
     flex-direction: column;
@@ -143,4 +147,17 @@ body, html {
     align-items: center;
     gap: 10px;
     justify-content: end;
+}
+
+#header-timer-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+}
+
+#header-timer .header-timer-right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
