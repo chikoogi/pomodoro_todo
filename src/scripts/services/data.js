@@ -35,4 +35,4 @@ export let TODO_LIST = [
   },
 ];
 
-export const ACTIVE_TIMER = false;
+export let ACTIVE_TIMER = false;

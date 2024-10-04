@@ -1,5 +1,6 @@
-import { ACTIVE_TIMER } from "../services/data.js";
 import { getMMSSFormat } from "../services/tools.js";
+
+let ACTIVE_TIMER = null;
 
 export function renderTaskDetails(item, setItems) {
   const todoItem = item;
@@ -153,25 +154,29 @@ function updateTaskList(tasks, setTasks) {
       countDownTimerEl.className = "countdown-timer";
       countDownTimerEl.style.display = "none";
 
+      let intervalTimer = null;
+
       const playBtnEl = document.createElement("button");
       taskItemRight.appendChild(playBtnEl);
       playBtnEl.innerHTML = `&gt;`;
       playBtnEl.className = "play-btn";
       playBtnEl.onclick = () =>
-        startTimer(task, taskItemRight, () => {
+        (intervalTimer = startTimer(task, taskItemRight, () => {
           tasks.splice(taskIndex, 1, {
             ...task,
             pomodoroCount: ++task.pomodoroCount,
           });
           setTasks([...tasks]);
-        });
+        }));
 
       const stopBtnEl = document.createElement("button");
       taskItemRight.appendChild(stopBtnEl);
       stopBtnEl.innerHTML = `ㅁ`;
       stopBtnEl.className = "stop-btn";
       stopBtnEl.style.display = "none";
-      stopBtnEl.onclick = () => stopTimer(task, taskItemRight);
+      stopBtnEl.onclick = () => {
+        stopTimer(task, taskItemRight);
+      };
     }
 
     const deleteBtnEl = document.createElement("button");
@@ -188,8 +193,6 @@ function updateTaskList(tasks, setTasks) {
 function updateCounDownTimer() {}
 
 function startTimer(task, parentEl, onIncreaseCount) {
-  let pomodoroTime = task.pomodoroTime;
-
   const playBtnEl = parentEl.querySelector(".play-btn");
   const stopBtnEl = parentEl.querySelector(".stop-btn");
   const countDownTimerEl = parentEl.querySelector(".countdown-timer");
@@ -203,16 +206,33 @@ function startTimer(task, parentEl, onIncreaseCount) {
     return;
   }
 
+  let pomodoroTime = task.pomodoroTime;
+
+  ACTIVE_TIMER = {
+    task,
+    intervalTimer: null,
+    remainingTime: pomodoroTime,
+  };
+
+  updateHeader(task, pomodoroTime);
+
   const intervalTimer = setInterval(() => {
-    if (pomodoroTime <= 0) {
+    if (ACTIVE_TIMER.remainingTime <= 0) {
       clearInterval(intervalTimer);
       onIncreaseCount();
+      ACTIVE_TIMER = null;
+      updateHeader(null, 0);
       return;
     }
 
-    countDownTimerEl.textContent = getMMSSFormat(pomodoroTime);
-    pomodoroTime--;
+    countDownTimerEl.textContent = getMMSSFormat(ACTIVE_TIMER.remainingTime);
+    updateHeader(task, ACTIVE_TIMER.remainingTime);
+    ACTIVE_TIMER.remainingTime--;
   }, 1000);
+
+  ACTIVE_TIMER.intervalTimer = intervalTimer;
+
+  return intervalTimer;
 }
 
 function stopTimer(task, parentEl) {
@@ -223,6 +243,32 @@ function stopTimer(task, parentEl) {
   playBtnEl.style.display = "block";
   stopBtnEl.style.display = "none";
   countDownTimerEl.style.display = "none";
+
+  if (ACTIVE_TIMER && ACTIVE_TIMER.task === task) {
+    clearInterval(ACTIVE_TIMER.intervalTimer);
+    updateHeader(null, 0); // 헤더 초기화
+    ACTIVE_TIMER = null; // 타이머 정보 초기화
+  }
 }
 
 function pauseTimer(task) {}
+
+function updateHeader(task, pomodoroTime) {
+  const headerTitle = document.getElementById("header-title");
+  const headerTimer = document.getElementById("header-timer");
+  const taskTitle = document.getElementById("task-title");
+  const remainTime = document.getElementById("remaining-time");
+
+  if (task) {
+    headerTitle.style.display = "none";
+    headerTimer.style.display = "block";
+    taskTitle.textContent = `${task.name} / ${task.pomodoroTime}m`;
+    remainTime.textContent = getMMSSFormat(pomodoroTime);
+    // taskTitle.style.display = "block";
+    // remainTime.style.display = "block";
+  } else {
+    // 타이머가 없을 때 기본 상태로 돌아가기
+    headerTitle.style.display = "block";
+    headerTimer.style.display = "none";
+  }
+}
