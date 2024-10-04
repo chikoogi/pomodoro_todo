@@ -190,8 +190,6 @@ function updateTaskList(tasks, setTasks) {
 }
 
 /* 참고 https://www.w3schools.com/howto/howto_js_countdown.asp */
-function updateCounDownTimer() {}
-
 function startTimer(task, parentEl, onIncreaseCount) {
   const playBtnEl = parentEl.querySelector(".play-btn");
   const stopBtnEl = parentEl.querySelector(".stop-btn");
