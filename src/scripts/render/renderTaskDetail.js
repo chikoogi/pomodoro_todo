@@ -1,4 +1,4 @@
-export function renderTaskDetails(item) {
+export function renderTaskDetails(item, setItems) {
   const todoItem = item;
 
   const title = todoItem.name;
@@ -6,18 +6,19 @@ export function renderTaskDetails(item) {
 
   const setTasks = (updateTasks) => {
     tasks = updateTasks;
+    setItems(tasks);
     updateTaskList(tasks, setTasks);
   };
 
   updateTaskTitle(title);
   updateTaskList(tasks, setTasks);
 
-  document.getElementById("add-task-button").addEventListener("click", () => {
+  document.getElementById("add-task-button").onclick = () => {
     const taskInputView = document.getElementById("task-input-view");
     if (taskInputView.style.display === "none") {
       showTaskInputView(tasks, setTasks);
     }
-  });
+  };
 }
 
 function showTaskInputView(tasks, setTasks, editTask = null) {
@@ -27,38 +28,39 @@ function showTaskInputView(tasks, setTasks, editTask = null) {
 
   // 초기화
   taskInput.value = editTask ? editTask.name : "새로운 할 일 입력";
-  pomodoroInput.value = editTask ? editTask.pomodoro : 25;
+  pomodoroInput.value = editTask ? editTask.pomodoroTime : 25;
 
   taskInputView.style.display = "block";
   taskInput.focus();
 
-  document.getElementById("save-task-button").addEventListener("click", () => {
+  const saveBtn = document.getElementById("save-task-button");
+  saveBtn.onclick = () => {
     const taskName = taskInput.value.trim();
     const pomodoroTime = pomodoroInput.value.trim();
 
-    if (taskName && pomodoroTime) {
-      if (editTask) {
-        // 수정 모드일 때
-        editTask.name = taskName;
-        editTask.pomodoro = parseInt(pomodoroTime);
-      } else {
-        // 새 할 일 추가 모드일 때
-        const newTask = {
-          name: taskName,
-          pomodoro: parseInt(pomodoroTime),
-          completed: false,
-        };
-        tasks.push(newTask);
-      }
+    if (!taskName || !pomodoroTime) return;
 
-      setTasks(tasks); // 상태 업데이트 및 저장
-      taskInputView.style.display = "none"; // 입력창 닫기
+    if (editTask) {
+      // 수정 모드일 때
+      editTask.name = taskName;
+      editTask.pomodoroTime = parseInt(pomodoroTime);
+    } else {
+      // 새 할 일 추가 모드일 때
+      const newTask = {
+        name: taskName,
+        pomodoroTime: parseInt(pomodoroTime),
+        pomodoroCount: 0,
+        completed: false,
+      };
+      setTasks([...tasks, newTask]);
     }
-  });
 
-  document.getElementById("cancel-task-button").addEventListener("click", () => {
     taskInputView.style.display = "none"; // 입력창 닫기
-  });
+  };
+
+  document.getElementById("cancel-task-button").click = () => {
+    taskInputView.style.display = "none"; // 입력창 닫기
+  };
 }
 
 function updateTaskTitle(title) {
@@ -66,32 +68,69 @@ function updateTaskTitle(title) {
   taskTitleElement.textContent = title;
 }
 
+function updatePomodoroStatus(tasks) {
+  console.log(...tasks);
+  const pomodoroTotalElement = document.getElementById("pomodoro-total");
+  pomodoroTotalElement.innerHTML = tasks.length;
+
+  const pomodoroCurrentElement = document.getElementById("pomodoro-current");
+  pomodoroCurrentElement.innerHTML = tasks.filter((task) => task.completed).length;
+}
+
 function updateTaskList(tasks, setTasks) {
   const taskListElement = document.getElementById("task-list");
   taskListElement.innerHTML = "";
 
-  tasks.forEach((task) => {
-    const taskItem = document.createElement("li");
+  tasks.forEach((task, taskIndex) => {
+    const taskItem = document.createElement("div");
     taskListElement.appendChild(taskItem);
+    taskItem.className = "task-item";
 
-    taskItem.innerHTML = `
-    <div class="task-item">
-      <div class="task-item-left">
-        <span>${task.text}</span>
-        <span>(${task.pomodoroTime})분</span>
-        <span><img src="src/assets/icon/timer10.png" width="20px"/>${task.pomodoroCount}</span>
-      </div>
-      <div class="task-item-right">
-        <button> &gt; </button>
-        <button> X </button>
-      </div>
-      
-    </div>
-    `;
+    const taskItemLeft = document.createElement("div");
+    taskItem.appendChild(taskItemLeft);
+    taskItemLeft.className = "task-item-left";
+
+    const checkboxEl = document.createElement("input");
+    taskItemLeft.appendChild(checkboxEl);
+    checkboxEl.type = "checkbox";
+    checkboxEl.onchange = (e) => {
+      tasks.splice(taskIndex, 1, {
+        ...task,
+        completed: e.target.checked,
+      });
+      updatePomodoroStatus(tasks);
+    };
+
+    const nameEl = document.createElement("span");
+    nameEl.innerText = task.name;
+
+    const timeEl = document.createElement("span");
+    timeEl.innerText = `(${task.pomodoroTime})`;
+
+    const imgEl = document.createElement("img");
+    imgEl.src = "src/assets/icon/timer10.png";
+    imgEl.width = 20;
+    imgEl.height = 20;
+
+    const countEl = document.createElement("span");
+    countEl.innerText = task.pomodoroCount;
+
+    taskItemLeft.append(nameEl, timeEl, imgEl, countEl);
+
+    const taskItemRight = document.createElement("div");
+    taskItem.appendChild(taskItemRight);
+    taskItemRight.className = "task-item-right";
+
+    const playBtnEl = document.createElement("button");
+    taskItemRight.appendChild(playBtnEl);
+    playBtnEl.innerHTML = `&gt;`;
+
+    const deleteBtnEl = document.createElement("button");
+    taskItemRight.appendChild(deleteBtnEl);
+    deleteBtnEl.innerHTML = `X`;
+    deleteBtnEl.onclick = () => {
+      tasks.splice(taskIndex, 1); // 해당
+      setTasks(tasks);
+    };
   });
-}
-
-function deleteTask(tasks, taskIndex) {
-  tasks.splice(taskIndex, 1); // 해당 인덱스의 할 일 삭제
-  renderTaskDetails(tasks); // 할 일 목록 갱신
 }

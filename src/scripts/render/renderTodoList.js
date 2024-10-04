@@ -10,12 +10,12 @@ export function renderTodoLists(data) {
 
   updateFolderList(todoLists, setTodoLists);
 
-  document.getElementById("add-folder-button").addEventListener("click", () => {
+  document.getElementById("add-folder-button").onclick = () => {
     const folderInputView = document.getElementById("folder-input-view");
-    if (folderInputView.style.display === "none") {
-      showInputView(todoLists, setTodoLists);
-    }
-  });
+    // if (folderInputView.style.display === "none") {
+    showInputView(todoLists, setTodoLists);
+    // }
+  };
 
   /*@TODO 임시 클릭 */
   const firstItem = document.querySelector("#folder-list li");
@@ -24,36 +24,42 @@ export function renderTodoLists(data) {
 
 function showInputView(todoLists, setTodoLists) {
   const folderInputView = document.getElementById("folder-input-view");
-  const folderInput = document.getElementById("folder-input");
+  let folderInput = document.getElementById("folder-input");
 
   folderInputView.style.display = "block";
   folderInput.focus();
 
-  folderInput.addEventListener("keydown", function handleKeyDown(e) {
+  /* addEventListener 초기화 */
+  // const clonedFolderInput = folderInput.cloneNode(true);
+  // folderInput.replaceWith(clonedFolderInput);
+  // folderInput = clonedFolderInput;
+
+  folderInput.onkeydown = (e) => {
+    console.log(e.key);
     if (e.key === "Enter") {
       const newFolderName = folderInput.value.trim();
-      if (newFolderName !== "") {
-        addTodoList(todoLists, newFolderName, setTodoLists); // 목록 추가
-      }
+      if (newFolderName === "") return;
+
+      const newTodo = {
+        id: Date.now().toString(), // 새로운 고유 ID
+        name: newFolderName,
+        tasks: [],
+      };
+      addTodoList(todoLists, newTodo, setTodoLists); // 목록 추가
 
       folderInput.value = "새로운 목록";
       folderInputView.style.display = "none";
-      folderInput.removeEventListener("keydown", handleKeyDown);
+      folderInput.onkeydown = null;
     } else if (e.key === "Escape") {
       folderInput.value = "새로운 목록";
       folderInputView.style.display = "none";
-      folderInput.removeEventListener("keydown", handleKeyDown);
+      folderInput.onkeydown = null;
     }
-  });
+  };
 }
 
-function addTodoList(todoLists, newFolderName, setTodoLists) {
-  const newListSet = {
-    id: Date.now().toString(), // 새로운 고유 ID
-    name: newFolderName,
-    tasks: [],
-  };
-  const updatedTodoLists = [...todoLists, newListSet];
+function addTodoList(todoLists, newTodo, setTodoLists) {
+  const updatedTodoLists = [...todoLists, newTodo];
   setTodoLists(updatedTodoLists); // 상태 반영
 }
 
@@ -61,11 +67,12 @@ function deleteTodoList(todoLists, folderId, setTodoLists) {
   const updatedTodoLists = todoLists.filter((list) => list.id !== folderId);
   setTodoLists(updatedTodoLists); // 상태 반영
 }
+
 function updateFolderList(todoLists, setTodoLists) {
   const folderListElement = document.getElementById("folder-list");
   folderListElement.innerHTML = "";
 
-  todoLists.forEach((list) => {
+  todoLists.forEach((list, listIndex) => {
     const listItem = document.createElement("li");
     folderListElement.appendChild(listItem);
 
@@ -81,18 +88,25 @@ function updateFolderList(todoLists, setTodoLists) {
     const deleteBtn = document.createElement("button");
     btnItem.appendChild(deleteBtn);
     deleteBtn.textContent = "X";
-    deleteBtn.addEventListener("click", (e) => {
+    deleteBtn.onclick = (e) => {
       const chk = confirm("삭제 하시겠습니까?");
       if (chk) {
         e.stopPropagation();
         deleteTodoList(todoLists, list.id, setTodoLists); // 삭제 함수 호출
       }
-    });
+    };
 
     const countBtn = document.createElement("span");
     btnItem.appendChild(countBtn);
     countBtn.textContent = list.tasks.length.toString();
 
-    listItem.addEventListener("click", () => renderTaskDetails(list));
+    listItem.onclick = () =>
+      renderTaskDetails(list, (tasks) => {
+        todoLists.splice(listIndex, 1, {
+          ...list,
+          tasks: tasks,
+        });
+        setTodoLists(todoLists);
+      });
   });
 }
