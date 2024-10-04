@@ -4,8 +4,6 @@ let ACTIVE_TIMER = null;
 
 export function renderTaskDetails(item, setItems) {
   const todoItem = item;
-
-  const title = todoItem.name;
   let tasks = todoItem.tasks;
 
   const setTasks = (updateTasks) => {
@@ -15,7 +13,7 @@ export function renderTaskDetails(item, setItems) {
     updatePomodoroStatus(tasks);
   };
 
-  updateTaskTitle(title);
+  updateTaskTitle(todoItem.name);
   updateTaskList(tasks, setTasks);
 
   document.getElementById("add-task-button").onclick = () => {

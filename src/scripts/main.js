@@ -1,6 +1,6 @@
 import "../styles/layout.css";
 import { loadFromLocalStorage, saveToLocalStorage } from "./services/localStorage.js";
-import { renderTodoLists } from "./render/renderTodoList.js";
+import { renderTodoLists, setState, showInputView } from "./render/renderTodoList.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   /* 레이아웃 렌더링 */
@@ -21,11 +21,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   let todoLists = loadFromLocalStorage();
 
   // 할 일 목록 렌더링
-  renderTodoLists(todoLists);
+  renderTodoLists(todoLists, updateTodoLists);
+
+  // "목록 추가" 버튼에 이벤트 추가
+  document.getElementById("add-folder-button").addEventListener("click", () => {
+    const folderInputView = document.getElementById("folder-input-view");
+    if (folderInputView.style.display === "none") {
+      showInputView(todoLists, updateTodoLists);
+    }
+  });
 });
 
 // 상태가 변경될 때 호출하여 로컬 스토리지에 저장하는 함수
-export function updateTodoLists(updatedTodoLists) {
-  localStorage.setItem("todoLists", JSON.stringify(updatedTodoLists));
-  setState(updatedTodoLists); // 상태 변경 후 렌더링
+function updateTodoLists(updatedTodoLists) {
+  const todoLists = updatedTodoLists;
+  // localStorage.setItem("todoLists", JSON.stringify(todoLists));
+  setState(todoLists); // 상태 변경을 반영
 }
