@@ -18,7 +18,7 @@ export function renderTodoLists(data) {
   };
 
   /*@TODO 임시 클릭 */
-  const firstItem = document.querySelector("#folder-list li");
+  const firstItem = document.querySelector("#folder-list .folder-item");
   firstItem.click();
 }
 
@@ -72,17 +72,21 @@ function updateFolderList(todoLists, setTodoLists) {
   const folderListElement = document.getElementById("folder-list");
   folderListElement.innerHTML = "";
 
+  /*이전에 선택된 항목을 추적*/
+  let selectedFolderItem = null;
+
   todoLists.forEach((list, listIndex) => {
-    const listItem = document.createElement("li");
-    folderListElement.appendChild(listItem);
+    const folderItem = document.createElement("div");
+    folderListElement.appendChild(folderItem);
+    folderItem.className = "folder-item";
 
     const titleItem = document.createElement("div");
-    listItem.appendChild(titleItem);
+    folderItem.appendChild(titleItem);
     titleItem.className = "todo-li-name";
     titleItem.textContent = list.name;
 
     const btnItem = document.createElement("div");
-    listItem.appendChild(btnItem);
+    folderItem.appendChild(btnItem);
     btnItem.className = "todo-li-btn";
 
     const deleteBtn = document.createElement("button");
@@ -100,7 +104,17 @@ function updateFolderList(todoLists, setTodoLists) {
     btnItem.appendChild(countBtn);
     countBtn.textContent = list.tasks.length.toString();
 
-    listItem.onclick = () =>
+    folderItem.onclick = () => {
+      // const allFolderItems = document.querySelectorAll(".folder-item");
+      // allFolderItems.forEach((item) => item.classList.remove("selected"));
+      // folderItem.classList.add("selected");
+
+      if (selectedFolderItem) {
+        selectedFolderItem.classList.remove("selected");
+      }
+      folderItem.classList.add("selected");
+      selectedFolderItem = folderItem;
+
       renderTaskDetails(list, (tasks) => {
         todoLists.splice(listIndex, 1, {
           ...list,
@@ -108,5 +122,6 @@ function updateFolderList(todoLists, setTodoLists) {
         });
         setTodoLists(todoLists);
       });
+    };
   });
 }

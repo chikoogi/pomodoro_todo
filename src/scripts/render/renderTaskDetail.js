@@ -8,6 +8,7 @@ export function renderTaskDetails(item, setItems) {
     tasks = updateTasks;
     setItems(tasks);
     updateTaskList(tasks, setTasks);
+    updatePomodoroStatus(tasks);
   };
 
   updateTaskTitle(title);
@@ -69,7 +70,6 @@ function updateTaskTitle(title) {
 }
 
 function updatePomodoroStatus(tasks) {
-  console.log(...tasks);
   const pomodoroTotalElement = document.getElementById("pomodoro-total");
   pomodoroTotalElement.innerHTML = tasks.length;
 
@@ -85,6 +85,8 @@ function updateTaskList(tasks, setTasks) {
     const taskItem = document.createElement("div");
     taskListElement.appendChild(taskItem);
     taskItem.className = "task-item";
+    if (task.completed) taskItem.classList.add("completed");
+    else taskItem.classList.remove("completed");
 
     const taskItemLeft = document.createElement("div");
     taskItem.appendChild(taskItemLeft);
@@ -93,19 +95,25 @@ function updateTaskList(tasks, setTasks) {
     const checkboxEl = document.createElement("input");
     taskItemLeft.appendChild(checkboxEl);
     checkboxEl.type = "checkbox";
+    checkboxEl.checked = task.completed;
     checkboxEl.onchange = (e) => {
       tasks.splice(taskIndex, 1, {
         ...task,
         completed: e.target.checked,
       });
-      updatePomodoroStatus(tasks);
+      setTasks(tasks);
     };
+
+    const textEl = document.createElement("div");
+    taskItemLeft.appendChild(textEl);
+    textEl.className = "task-text-wrapper";
 
     const nameEl = document.createElement("span");
     nameEl.innerText = task.name;
 
     const timeEl = document.createElement("span");
-    timeEl.innerText = `(${task.pomodoroTime})`;
+    timeEl.className = "task-pomodoro-item";
+    timeEl.innerText = `(${task.pomodoroTime}m)`;
 
     const imgEl = document.createElement("img");
     imgEl.src = "src/assets/icon/timer10.png";
@@ -113,9 +121,10 @@ function updateTaskList(tasks, setTasks) {
     imgEl.height = 20;
 
     const countEl = document.createElement("span");
+    countEl.className = "task-pomodoro-count";
     countEl.innerText = task.pomodoroCount;
 
-    taskItemLeft.append(nameEl, timeEl, imgEl, countEl);
+    textEl.append(nameEl, timeEl, imgEl, countEl);
 
     const taskItemRight = document.createElement("div");
     taskItem.appendChild(taskItemRight);
