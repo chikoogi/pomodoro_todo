@@ -1,10 +1,11 @@
 import { getMMSSFormat } from "../scripts/services/tools.js";
 
 export class TaskList {
-  constructor(todoTitle, tasks, timer) {
+  constructor(todoTitle, tasks, timer, updateTodoItem) {
     this.todoTitle = todoTitle;
     this.tasks = tasks;
     this.timer = timer;
+    this.updateTodoItem = updateTodoItem;
 
     document.getElementById("add-task-button").onclick = () => {
       const taskInputView = document.getElementById("task-input-view");
@@ -177,6 +178,7 @@ export class TaskList {
           this.clearTaskTimerRender(task);
         }
         this.tasks.splice(taskIdx, 1);
+        this.updateTodoItem();
         this.render();
       };
     });
@@ -303,6 +305,8 @@ export class TaskList {
       }
 
       taskInputView.style.display = "none"; // 입력창 숨기기
+      this.updateTodoItem();
+
       this.render();
     };
 
