@@ -1,11 +1,10 @@
 import "../styles/layout.css";
-import { loadFromLocalStorage, saveToLocalStorage } from "./services/localStorage.js";
-import { renderTodoLists } from "./render/renderTodoList.js";
+import { loadFromLocalStorage } from "./services/localStorage.js";
 import { TodoList } from "../components/TodoList.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   /* 레이아웃 렌더링 */
-  const app = document.getElementById("app");
+  // const app = document.getElementById("app");
 
   const loadHTML = async (path, elementId) => {
     const response = await fetch(path);

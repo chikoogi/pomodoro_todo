@@ -92,11 +92,20 @@ export class TaskList {
             alert("이미 실행 중인 할일이 있습니다.");
             return;
           }
+
+          /* 타이머 시간 설정 */
+          /* 분단위 -> 초단위 변경*/
+          this.timer.setRemainingTime(task.pomodoroTime);
+
+          /* task 타이머 렌더링  */
           this.startTaskTimerRender(taskItemRight);
+
+          /* 헤더 타이머 렌더링 */
           this.startHeaderTimerRender(
             task,
             () => {
               this.timer.pause();
+
               const pauseBtn = document.getElementById("header-pause-button");
               const playBtn = document.getElementById("header-play-button");
 
@@ -106,12 +115,35 @@ export class TaskList {
             () => {
               this.timer.stop();
               this.clearHeaderTimerRender();
-              this.clearTaskTImerRender(taskItemRight);
+              this.clearTaskTimerRender(taskItemRight);
+
+              /* 실행 중인 Task 비활성화 */
+              this.timer.setActiveItem(null);
             },
             () => {
-              this.timer.restart();
+              this.timer.restart(
+                (remainingTime) => {
+                  const taskCountDownTimerEl = taskItemRight.querySelector(".countdown-timer");
+                  const remainTime = document.getElementById("header-remaining-time");
+                  taskCountDownTimerEl.textContent = getMMSSFormat(remainingTime);
+                  remainTime.textContent = getMMSSFormat(remainingTime);
+                },
+                () => {
+                  ++task.pomodoroCount;
+                  this.clearHeaderTimerRender();
+                  this.render();
+                },
+              );
+
+              const pauseBtn = document.getElementById("header-pause-button");
+              const playBtn = document.getElementById("header-play-button");
+
+              pauseBtn.style.display = "block";
+              playBtn.style.display = "none";
             },
           );
+
+          /* 타이머 시작 */
           this.timer.start(
             (remainingTime) => {
               const taskCountDownTimerEl = taskItemRight.querySelector(".countdown-timer");
@@ -119,9 +151,17 @@ export class TaskList {
 
               taskCountDownTimerEl.textContent = getMMSSFormat(remainingTime);
               remainTime.textContent = getMMSSFormat(remainingTime);
+              console.log(taskCountDownTimerEl.textContent);
             },
-            () => ++task.pomodoroCount,
+            () => {
+              ++task.pomodoroCount;
+              this.clearHeaderTimerRender();
+              this.render();
+            },
           );
+
+          /* 실행 중인 Task 활성화 */
+          this.timer.setActiveItem(task);
         };
 
         const stopBtnEl = document.createElement("button");
@@ -132,8 +172,16 @@ export class TaskList {
         stopBtnEl.onclick = () => {
           this.timer.stop();
           this.clearHeaderTimerRender();
-          this.clearTaskTImerRender(taskItemRight);
+          this.clearTaskTimerRender(taskItemRight);
+
+          /* 실행 중인 Task 비활성화 */
+          this.timer.setActiveItem(null);
         };
+
+        if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
+          console.log("true");
+          this.startTaskTimerRender(taskItemRight);
+        }
       }
 
       const deleteBtnEl = document.createElement("button");
@@ -143,17 +191,12 @@ export class TaskList {
         if (this.timer.is()) {
           this.timer.stop();
           this.clearHeaderTimerRender();
-          this.clearTaskTImerRender(taskItemRight);
+          this.clearTaskTimerRender(taskItemRight);
         }
         this.tasks.splice(taskIdx, 1);
+        this.render();
       };
     });
-  }
-
-  onInterval(taskEl) {
-    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer");
-
-    // updateHeader( this.timer.remainingTime);
   }
 
   startTaskTimerRender(taskEl) {
@@ -164,6 +207,8 @@ export class TaskList {
     taskPlayBtnEl.style.display = "none";
     taskStopBtnEl.style.display = "block";
     taskCountDownTimerEl.style.display = "inline-block";
+
+    console.log(taskCountDownTimerEl.textContent, "____");
   }
 
   startHeaderTimerRender(task, onPause, onStop, onRestart) {
@@ -174,19 +219,19 @@ export class TaskList {
     const remainTime = document.getElementById("header-remaining-time");
     const pauseBtn = document.getElementById("header-pause-button");
     const stopBtn = document.getElementById("header-stop-button");
-    const playBtn = document.getElementById("header-play-button");
+    const rePlayBtn = document.getElementById("header-play-button");
 
     headerTitle.style.display = "none";
     headerTimer.style.display = "block";
     stopBtn.style.display = "block";
     pauseBtn.style.display = "block";
-    playBtn.style.display = "none";
+    rePlayBtn.style.display = "none";
 
     taskTitle.textContent = `${this.todoTitle} / ${task.name}`;
 
     stopBtn.onclick = onStop;
     pauseBtn.onclick = onPause;
-    playBtn.onclick = onRestart;
+    rePlayBtn.onclick = onRestart;
   }
 
   clearHeaderTimerRender() {
@@ -196,7 +241,7 @@ export class TaskList {
     headerTimer.style.display = "none";
   }
 
-  clearTaskTImerRender(taskEl) {
+  clearTaskTimerRender(taskEl) {
     const playBtnEl = taskEl.querySelector(".play-btn");
     const stopBtnEl = taskEl.querySelector(".stop-btn");
     const countDownTimerEl = taskEl.querySelector(".countdown-timer");

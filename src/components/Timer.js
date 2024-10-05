@@ -2,11 +2,17 @@ export class Timer {
   constructor() {
     this.remainingTime = 25;
     this.interval = null;
+    this.activeItem = null;
   }
 
-  init() {
+  initState() {
     this.remainingTime = 25;
     this.interval = null;
+    this.activeItem = null;
+  }
+
+  setActiveItem(item) {
+    this.activeItem = item;
   }
 
   setRemainingTime(time) {
@@ -26,34 +32,32 @@ export class Timer {
     this.interval = setInterval(() => {
       if (this.remainingTime <= 0) {
         clearInterval(this.interval);
-        this.interval = null;
-
+        this.initState();
         if (onComplete) onComplete(); // 타이머 완료 후 호출
       } else {
         this.remainingTime--;
         if (onInterval) onInterval(this.remainingTime);
       }
-    }, 500);
+    }, 1000);
   }
 
   restart(onInterval, onComplete) {
     this.interval = setInterval(() => {
       if (this.remainingTime <= 0) {
         clearInterval(this.interval);
-        this.interval = null;
-
+        this.initState();
         if (onComplete) onComplete(); // 타이머 완료 후 호출
       } else {
         this.remainingTime--;
         if (onInterval) onInterval(this.remainingTime);
       }
-    }, 500);
+    }, 1000);
   }
 
   stop() {
     if (this.interval) {
       clearInterval(this.interval);
-      this.interval = null;
+      this.initState();
     }
   }
 

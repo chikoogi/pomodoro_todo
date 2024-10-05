@@ -5,6 +5,7 @@ export class TodoList {
   constructor(todoLists) {
     this.timer = new Timer();
     this.todoLists = todoLists;
+    this.tasks = todoLists.map((v) => new TaskList(v.name, v.tasks, this.timer));
     this.selectedItem = null;
   }
 
@@ -52,19 +53,19 @@ export class TodoList {
       countBtn.textContent = item.tasks.length.toString();
 
       folderEl.onclick = () => {
-        this.setSelectedItem(item);
+        this.setSelectedItem(itemIdx);
       };
     });
   }
 
-  setSelectedItem(item) {
+  setSelectedItem(itemIdx) {
     const folderEl = document.createElement("div");
 
     if (this.selectedItem) {
       folderEl.classList.remove("selected");
     }
     folderEl.classList.add("selected");
-    this.selectedItem = new TaskList(item.name, item.tasks, this.timer);
+    this.selectedItem = this.tasks[itemIdx];
     this.selectedItem.init();
   }
 

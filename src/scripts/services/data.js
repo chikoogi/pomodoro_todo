@@ -15,7 +15,7 @@ export let TODO_LIST = [
         name: "보고서 작성",
         pomodoroTime: 10,
         pomodoroCount: 1,
-        completed: true,
+        completed: false,
       },
     ],
   },
