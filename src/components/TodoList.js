@@ -17,6 +17,9 @@ export class TodoList {
       }
     };
     this.render();
+
+    /*@TODO 첫번재 선택 임시코드*/
+    this.setSelectedItem(this.todoLists[0], document.getElementById("folder-list").children[0]);
   }
 
   render() {
@@ -24,38 +27,7 @@ export class TodoList {
     folderListElement.innerHTML = ""; // 기존 목록 초기화
 
     this.todoLists.forEach((item, itemIdx) => {
-      this.renderItem(item);
-      /* const folderEl = document.createElement("div");
-      folderListElement.appendChild(folderEl);
-      folderEl.className = "folder-item";
-
-      const titleItem = document.createElement("div");
-      folderEl.appendChild(titleItem);
-      titleItem.className = "todo-li-name";
-      titleItem.textContent = item.name;
-
-      const btnItem = document.createElement("div");
-      folderEl.appendChild(btnItem);
-      btnItem.className = "todo-li-btn";
-
-      const deleteBtn = document.createElement("button");
-      btnItem.appendChild(deleteBtn);
-      deleteBtn.textContent = "X";
-      deleteBtn.onclick = (e) => {
-        const chk = confirm("삭제 하시겠습니까?");
-        if (chk) {
-          e.stopPropagation();
-          this.deleteTodoItem(itemIdx); // 삭제 함수 호출
-        }
-      };
-
-      const countBtn = document.createElement("span");
-      btnItem.appendChild(countBtn);
-      countBtn.textContent = item.tasks.length.toString();
-
-      folderEl.onclick = () => {
-        this.setSelectedItem(item, folderEl);
-      };*/
+      this.renderItem(item, itemIdx);
     });
   }
 
@@ -70,8 +42,18 @@ export class TodoList {
 
     const titleItem = document.createElement("div");
     folderEl.appendChild(titleItem);
-    titleItem.className = "todo-li-name";
-    titleItem.textContent = item.name;
+    titleItem.className = "folder-item-title";
+
+    const imgEl = document.createElement("img");
+    titleItem.appendChild(imgEl);
+    imgEl.src = "src/assets/icon/menu_white.png";
+    imgEl.width = 20;
+    imgEl.height = 20;
+
+    const textItem = document.createElement("div");
+    titleItem.appendChild(textItem);
+    textItem.className = "todo-li-name";
+    textItem.textContent = item.name;
 
     const btnItem = document.createElement("div");
     folderEl.appendChild(btnItem);
@@ -79,7 +61,8 @@ export class TodoList {
 
     const deleteBtn = document.createElement("button");
     btnItem.appendChild(deleteBtn);
-    deleteBtn.textContent = "X";
+    deleteBtn.innerHTML = `<img src="src/assets/icon/close_black.png">`;
+    deleteBtn.className = "btn-img";
     deleteBtn.onclick = (e) => {
       const chk = confirm("삭제 하시겠습니까?");
       if (chk) {

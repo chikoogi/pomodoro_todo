@@ -21,6 +21,7 @@ export class TaskList {
   }
 
   render() {
+    document.getElementById("task-input-view").style.display = "none";
     this.updatePomodoroStatus(this.tasks);
 
     const taskListElement = document.getElementById("task-list");
@@ -68,7 +69,7 @@ export class TaskList {
       timeEl.innerText = `(${task.pomodoroTime}m)`;
 
       const imgEl = document.createElement("img");
-      imgEl.src = "src/assets/icon/timer10.png";
+      imgEl.src = "src/assets/icon/timer_white.png";
       imgEl.width = 20;
       imgEl.height = 20;
 
@@ -94,8 +95,8 @@ export class TaskList {
 
         const playBtnEl = document.createElement("button");
         taskItemRight.appendChild(playBtnEl);
-        playBtnEl.innerHTML = `&gt;`;
-        playBtnEl.className = "play-btn";
+        playBtnEl.innerHTML = `<img src="src/assets/icon/play_black.png">`;
+        playBtnEl.className = "btn-img play-btn";
         playBtnEl.onclick = async () => {
           if (this.timer.is()) {
             alert("이미 실행 중인 할일이 있습니다.");
@@ -158,8 +159,8 @@ export class TaskList {
 
         const stopBtnEl = document.createElement("button");
         taskItemRight.appendChild(stopBtnEl);
-        stopBtnEl.innerHTML = `ㅁ`;
-        stopBtnEl.className = "stop-btn";
+        stopBtnEl.innerHTML = `<img src="src/assets/icon/stop_black.png">`;
+        stopBtnEl.className = "btn-img stop-btn";
         stopBtnEl.style.display = "none";
         stopBtnEl.onclick = () => {
           this.timer.stop();
@@ -170,9 +171,10 @@ export class TaskList {
 
       const deleteBtnEl = document.createElement("button");
       taskItemRight.appendChild(deleteBtnEl);
-      deleteBtnEl.innerHTML = `X`;
+      deleteBtnEl.innerHTML = `<img src="src/assets/icon/close_black.png">`;
+      deleteBtnEl.className = "btn-img delete-btn";
       deleteBtnEl.onclick = () => {
-        if (this.timer.is()) {
+        if (this.timer.is() && this.timer.activeItem.id === task.id) {
           this.timer.stop();
           this.clearHeaderTimerRender();
           this.clearTaskTimerRender(task);
@@ -200,6 +202,7 @@ export class TaskList {
   startHeaderTimerRender(task, onPause, onStop, onRestart) {
     const headerTitle = document.getElementById("header-title");
     const headerTimer = document.getElementById("header-timer");
+    const todoTitle = document.getElementById("header-todo-title");
     const taskTitle = document.getElementById("header-task-title");
     const remainTime = document.getElementById("header-remaining-time");
     const pauseBtn = document.getElementById("header-pause-button");
@@ -207,7 +210,8 @@ export class TaskList {
     const replayBtn = document.getElementById("header-play-button");
 
     headerTitle.style.display = "none";
-    taskTitle.textContent = `${this.todoTitle} / ${task.name}`;
+    todoTitle.textContent = this.todoTitle;
+    taskTitle.textContent = task.name;
 
     headerTimer.style.display = "block";
 
