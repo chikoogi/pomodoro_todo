@@ -48,9 +48,12 @@ export class TaskList {
           ...task,
           completed: e.target.checked,
         });
-        this.timer.stop();
-        this.clearHeaderTimerRender();
-        this.clearTaskTimerRender(task);
+
+        if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
+          this.timer.stop();
+          this.clearHeaderTimerRender();
+          this.clearTaskTimerRender(task);
+        }
         this.render();
       };
 
@@ -174,7 +177,7 @@ export class TaskList {
       deleteBtnEl.innerHTML = `<img src="src/assets/icon/close_black.png">`;
       deleteBtnEl.className = "btn-img delete-btn";
       deleteBtnEl.onclick = () => {
-        if (this.timer.is() && this.timer.activeItem.id === task.id) {
+        if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
           this.timer.stop();
           this.clearHeaderTimerRender();
           this.clearTaskTimerRender(task);
@@ -245,10 +248,12 @@ export class TaskList {
       .getElementById(`task-${task.id}`)
       .querySelector(".countdown-timer");
 
-    countDownTimerEl.classList.remove("timer");
     if (playBtnEl) playBtnEl.style.display = "block";
     if (stopBtnEl) stopBtnEl.style.display = "none";
-    if (countDownTimerEl) countDownTimerEl.style.display = "none";
+    if (countDownTimerEl) {
+      countDownTimerEl.style.display = "none";
+      countDownTimerEl.classList.remove("timer");
+    }
   }
 
   updateTaskTitle(title) {
