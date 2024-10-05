@@ -217,7 +217,6 @@ function startTimer(task, onIncreaseCount, restart = false) {
   }
 
   const taskEl = document.getElementById("task-list").querySelector(`#task-${task.id}`);
-
   const taskPlayBtnEl = taskEl.querySelector(".play-btn");
   const taskStopBtnEl = taskEl.querySelector(".stop-btn");
   const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer");
