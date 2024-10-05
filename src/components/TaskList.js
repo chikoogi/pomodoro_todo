@@ -30,8 +30,8 @@ export class TaskList {
       taskListElement.appendChild(taskItem);
       taskItem.id = `task-${task.id}`;
       taskItem.className = "task-item";
-      if (task.completed) taskItem.classList.add("completed");
-      else taskItem.classList.remove("completed");
+      if (task.completed) taskItem.setAttribute("completed", "true");
+      // else taskItem.removeAttribute("completed");
 
       const taskItemLeft = document.createElement("div");
       taskItem.appendChild(taskItemLeft);
@@ -46,6 +46,10 @@ export class TaskList {
           ...task,
           completed: e.target.checked,
         });
+        this.timer.stop();
+        this.clearHeaderTimerRender();
+        this.clearTaskTimerRender(task);
+        this.render();
       };
 
       const textEl = document.createElement("div");
@@ -78,29 +82,35 @@ export class TaskList {
       taskItemRight.className = "task-item-right";
 
       if (!task.completed) {
-        const countDownTimerEl = document.createElement("span");
+        const countDownTimerEl = document.createElement("div");
         taskItemRight.appendChild(countDownTimerEl);
         countDownTimerEl.className = "countdown-timer";
-        countDownTimerEl.style.display = "none";
+        if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
+          countDownTimerEl.style.display = "block";
+          countDownTimerEl.classList.add("timer");
+          countDownTimerEl.textContent = this.timer.el.textContent;
+        } else countDownTimerEl.style.display = "none";
 
         const playBtnEl = document.createElement("button");
         taskItemRight.appendChild(playBtnEl);
         playBtnEl.innerHTML = `&gt;`;
         playBtnEl.className = "play-btn";
-        playBtnEl.onclick = () => {
+        playBtnEl.onclick = async () => {
           if (this.timer.is()) {
             alert("이미 실행 중인 할일이 있습니다.");
             return;
           }
 
           /* 타이머 시간 설정 */
-          /* 분단위 -> 초단위 변경*/
           this.timer.setRemainingTime(task.pomodoroTime);
 
-          /* task 타이머 렌더링  */
-          this.startTaskTimerRender(taskItemRight);
+          /* 실행 중인 Task 활성화 */
+          this.timer.setActiveItem(task);
 
-          /* 헤더 타이머 렌더링 */
+          /* Task 타이머 렌더링  */
+          this.startTaskTimerRender(task);
+
+          /* Header 타이머 렌더링 */
           this.startHeaderTimerRender(
             task,
             () => {
@@ -115,25 +125,18 @@ export class TaskList {
             () => {
               this.timer.stop();
               this.clearHeaderTimerRender();
-              this.clearTaskTimerRender(taskItemRight);
+              this.clearTaskTimerRender(task);
 
               /* 실행 중인 Task 비활성화 */
               this.timer.setActiveItem(null);
             },
             () => {
-              this.timer.restart(
-                (remainingTime) => {
-                  const taskCountDownTimerEl = taskItemRight.querySelector(".countdown-timer");
-                  const remainTime = document.getElementById("header-remaining-time");
-                  taskCountDownTimerEl.textContent = getMMSSFormat(remainingTime);
-                  remainTime.textContent = getMMSSFormat(remainingTime);
-                },
-                () => {
-                  ++task.pomodoroCount;
-                  this.clearHeaderTimerRender();
-                  this.render();
-                },
-              );
+              this.timer.restart(() => {
+                ++task.pomodoroCount;
+                this.clearHeaderTimerRender();
+                this.clearTaskTimerRender(task);
+                this.render();
+              });
 
               const pauseBtn = document.getElementById("header-pause-button");
               const playBtn = document.getElementById("header-play-button");
@@ -144,24 +147,12 @@ export class TaskList {
           );
 
           /* 타이머 시작 */
-          this.timer.start(
-            (remainingTime) => {
-              const taskCountDownTimerEl = taskItemRight.querySelector(".countdown-timer");
-              const remainTime = document.getElementById("header-remaining-time");
-
-              taskCountDownTimerEl.textContent = getMMSSFormat(remainingTime);
-              remainTime.textContent = getMMSSFormat(remainingTime);
-              console.log(taskCountDownTimerEl.textContent);
-            },
-            () => {
-              ++task.pomodoroCount;
-              this.clearHeaderTimerRender();
-              this.render();
-            },
-          );
-
-          /* 실행 중인 Task 활성화 */
-          this.timer.setActiveItem(task);
+          this.timer.start(() => {
+            ++task.pomodoroCount;
+            this.clearHeaderTimerRender();
+            this.clearTaskTimerRender(task);
+            this.render();
+          });
         };
 
         const stopBtnEl = document.createElement("button");
@@ -172,16 +163,8 @@ export class TaskList {
         stopBtnEl.onclick = () => {
           this.timer.stop();
           this.clearHeaderTimerRender();
-          this.clearTaskTimerRender(taskItemRight);
-
-          /* 실행 중인 Task 비활성화 */
-          this.timer.setActiveItem(null);
+          this.clearTaskTimerRender(task);
         };
-
-        if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
-          console.log("true");
-          this.startTaskTimerRender(taskItemRight);
-        }
       }
 
       const deleteBtnEl = document.createElement("button");
@@ -191,7 +174,7 @@ export class TaskList {
         if (this.timer.is()) {
           this.timer.stop();
           this.clearHeaderTimerRender();
-          this.clearTaskTimerRender(taskItemRight);
+          this.clearTaskTimerRender(task);
         }
         this.tasks.splice(taskIdx, 1);
         this.render();
@@ -199,53 +182,64 @@ export class TaskList {
     });
   }
 
-  startTaskTimerRender(taskEl) {
-    const taskPlayBtnEl = taskEl.querySelector(".play-btn");
-    const taskStopBtnEl = taskEl.querySelector(".stop-btn");
-    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer");
+  startTaskTimerRender(task) {
+    const taskCountDownTimerEl = document
+      .getElementById(`task-${task.id}`)
+      .querySelector(".countdown-timer");
+    const taskPlayBtnEl = document.getElementById(`task-${task.id}`).querySelector(".play-btn");
+    const taskStopBtnEl = document.getElementById(`task-${task.id}`).querySelector(".stop-btn");
 
-    taskPlayBtnEl.style.display = "none";
+    taskCountDownTimerEl.style.display = "block";
+    taskCountDownTimerEl.classList.add("timer");
     taskStopBtnEl.style.display = "block";
-    taskCountDownTimerEl.style.display = "inline-block";
-
-    console.log(taskCountDownTimerEl.textContent, "____");
+    taskPlayBtnEl.style.display = "none";
   }
 
   startHeaderTimerRender(task, onPause, onStop, onRestart) {
     const headerTitle = document.getElementById("header-title");
-
     const headerTimer = document.getElementById("header-timer");
     const taskTitle = document.getElementById("header-task-title");
     const remainTime = document.getElementById("header-remaining-time");
     const pauseBtn = document.getElementById("header-pause-button");
     const stopBtn = document.getElementById("header-stop-button");
-    const rePlayBtn = document.getElementById("header-play-button");
+    const replayBtn = document.getElementById("header-play-button");
 
     headerTitle.style.display = "none";
-    headerTimer.style.display = "block";
-    stopBtn.style.display = "block";
-    pauseBtn.style.display = "block";
-    rePlayBtn.style.display = "none";
-
     taskTitle.textContent = `${this.todoTitle} / ${task.name}`;
 
+    headerTimer.style.display = "block";
+
+    remainTime.style.display = "block";
+    remainTime.className = "timer";
+
+    stopBtn.style.display = "block";
     stopBtn.onclick = onStop;
+
+    pauseBtn.style.display = "block";
     pauseBtn.onclick = onPause;
-    rePlayBtn.onclick = onRestart;
+
+    replayBtn.style.display = "none";
+    replayBtn.onclick = onRestart;
   }
 
   clearHeaderTimerRender() {
     const headerTitle = document.getElementById("header-title");
     const headerTimer = document.getElementById("header-timer");
+    const remainTime = document.getElementById("header-remaining-time");
+    remainTime.classList.remove("timer");
+
     headerTitle.style.display = "block";
     headerTimer.style.display = "none";
   }
 
-  clearTaskTimerRender(taskEl) {
-    const playBtnEl = taskEl.querySelector(".play-btn");
-    const stopBtnEl = taskEl.querySelector(".stop-btn");
-    const countDownTimerEl = taskEl.querySelector(".countdown-timer");
+  clearTaskTimerRender(task) {
+    const playBtnEl = document.getElementById(`task-${task.id}`).querySelector(".play-btn");
+    const stopBtnEl = document.getElementById(`task-${task.id}`).querySelector(".stop-btn");
+    const countDownTimerEl = document
+      .getElementById(`task-${task.id}`)
+      .querySelector(".countdown-timer");
 
+    countDownTimerEl.classList.remove("timer");
     if (playBtnEl) playBtnEl.style.display = "block";
     if (stopBtnEl) stopBtnEl.style.display = "none";
     if (countDownTimerEl) countDownTimerEl.style.display = "none";
