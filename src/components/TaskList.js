@@ -59,7 +59,7 @@ export class TaskList {
           ...task,
           completed: e.target.checked,
         });
-
+        this.updateTodoItem();
         if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
           this.timer.stop();
           this.clearHeaderTimerRender();
@@ -144,7 +144,13 @@ export class TaskList {
             },
             () => {
               this.timer.restart(() => {
-                ++task.pomodoroCount;
+                const v = {
+                  ...task,
+                  pomodoroCount: ++task.pomodoroCount,
+                };
+                this.tasks.splice(taskIdx, 1, v);
+                this.updateTodoItem();
+
                 this.clearHeaderTimerRender();
                 this.clearTaskTimerRender(task);
                 this.render();
@@ -160,7 +166,13 @@ export class TaskList {
 
           /* 타이머 시작 */
           this.timer.start(() => {
-            ++task.pomodoroCount;
+            const v = {
+              ...task,
+              pomodoroCount: ++task.pomodoroCount,
+            };
+            this.tasks.splice(taskIdx, 1, v);
+            this.updateTodoItem();
+
             this.clearHeaderTimerRender();
             this.clearTaskTimerRender(task);
             this.render();
