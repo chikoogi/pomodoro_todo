@@ -4,15 +4,15 @@ https://velog.io/@hannatoo/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%99%98%EC%9E%
 */
 
 module.exports = {
+  testEnvironment: "jsdom",
   moduleFileExtensions: ["js", "json", "jsx", "ts", "tsx", "json"],
   transform: {
     "^.+\\.(js|jsx)?$": "babel-jest",
   },
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
-    "\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-      "<rootDir>/__mocks__/fileMock.js",
-    "\\.(css|less)$": "<rootDir>/__mocks__/fileMock.js",
+    "\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/assetsTransformer.js",
+    "\\.(css|less)$": "<rootDir>/assetsTransformer.js",
   },
   testMatch: [
     "<rootDir>/**/*.test.(js|jsx|ts|tsx)",

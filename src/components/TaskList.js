@@ -1,7 +1,7 @@
-import IconTimer from "/src/assets/icon/timer_white.png";
-import IconPlay from "/src/assets/icon/play_black.png";
-import IconStop from "/src/assets/icon/stop_black.png";
-import IconClose from "/src/assets/icon/close_black.png";
+import IconTimer from "./../assets/icon/timer_white.png";
+import IconPlay from "./../assets/icon/play_black.png";
+import IconStop from "./../assets/icon/stop_black.png";
+import IconClose from "./../assets/icon/close_black.png";
 
 export class TaskList {
   constructor(todoTitle, tasks, timer, updateTodoItem) {
