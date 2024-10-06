@@ -1,5 +1,7 @@
 import { Timer } from "./Timer.js";
 import { TaskList } from "./TaskList.js";
+import IconMenu from "/src/assets/icon/menu_white.png";
+import IconClose from "/src/assets/icon/close_black.png";
 
 export class TodoList {
   constructor(todoLists) {
@@ -10,12 +12,16 @@ export class TodoList {
   }
 
   init() {
-    document.getElementById("add-folder-button").onclick = () => {
-      const folderInputView = document.getElementById("folder-input-view");
-      if (folderInputView.style.display === "none") {
-        this.showInputView();
-      }
-    };
+    const addBtn = document.getElementById("add-folder-button");
+    if (addBtn) {
+      document.getElementById("add-folder-button").onclick = () => {
+        const folderInputView = document.getElementById("folder-input-view");
+        if (folderInputView.style.display === "none") {
+          this.showInputView();
+        }
+      };
+    }
+
     this.render();
 
     /*@TODO 첫번재 선택 임시코드*/
@@ -46,7 +52,7 @@ export class TodoList {
 
     const imgEl = document.createElement("img");
     titleItem.appendChild(imgEl);
-    imgEl.src = "src/assets/icon/menu_white.png";
+    imgEl.src = IconMenu;
     imgEl.width = 20;
     imgEl.height = 20;
 
@@ -61,7 +67,7 @@ export class TodoList {
 
     const deleteBtn = document.createElement("button");
     btnItem.appendChild(deleteBtn);
-    deleteBtn.innerHTML = `<img src="src/assets/icon/close_black.png">`;
+    deleteBtn.innerHTML = `<img src="${IconClose}">`;
     deleteBtn.className = "btn-img";
     deleteBtn.onclick = (e) => {
       const chk = confirm("삭제 하시겠습니까?");

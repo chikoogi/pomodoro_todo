@@ -1,4 +1,4 @@
-import { getMMSSFormat } from "../scripts/services/tools.js";
+import { getMMSSFormat } from "../tools/tools.js";
 
 export class Timer {
   constructor() {

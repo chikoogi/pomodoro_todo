@@ -1,4 +1,7 @@
-import { getMMSSFormat } from "../scripts/services/tools.js";
+import IconTimer from "/src/assets/icon/timer_white.png";
+import IconPlay from "/src/assets/icon/play_black.png";
+import IconStop from "/src/assets/icon/stop_black.png";
+import IconClose from "/src/assets/icon/close_black.png";
 
 export class TaskList {
   constructor(todoTitle, tasks, timer, updateTodoItem) {
@@ -72,7 +75,7 @@ export class TaskList {
       timeEl.innerText = `(${task.pomodoroTime}m)`;
 
       const imgEl = document.createElement("img");
-      imgEl.src = "src/assets/icon/timer_white.png";
+      imgEl.src = IconTimer;
       imgEl.width = 20;
       imgEl.height = 20;
 
@@ -98,7 +101,7 @@ export class TaskList {
 
         const playBtnEl = document.createElement("button");
         taskItemRight.appendChild(playBtnEl);
-        playBtnEl.innerHTML = `<img src="src/assets/icon/play_black.png">`;
+        playBtnEl.innerHTML = `<img src=${IconPlay}>`;
         playBtnEl.className = "btn-img play-btn";
         playBtnEl.onclick = async () => {
           if (this.timer.is()) {
@@ -162,7 +165,7 @@ export class TaskList {
 
         const stopBtnEl = document.createElement("button");
         taskItemRight.appendChild(stopBtnEl);
-        stopBtnEl.innerHTML = `<img src="src/assets/icon/stop_black.png">`;
+        stopBtnEl.innerHTML = `<img src=${IconStop}>`;
         stopBtnEl.className = "btn-img stop-btn";
         stopBtnEl.style.display = "none";
         stopBtnEl.onclick = () => {
@@ -174,7 +177,7 @@ export class TaskList {
 
       const deleteBtnEl = document.createElement("button");
       taskItemRight.appendChild(deleteBtnEl);
-      deleteBtnEl.innerHTML = `<img src="src/assets/icon/close_black.png">`;
+      deleteBtnEl.innerHTML = `<img src=${IconClose}>`;
       deleteBtnEl.className = "btn-img delete-btn";
       deleteBtnEl.onclick = () => {
         if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
