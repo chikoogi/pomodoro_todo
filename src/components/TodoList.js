@@ -25,7 +25,8 @@ export class TodoList {
     this.render();
 
     /*@TODO 첫번재 선택 임시코드*/
-    this.setSelectedItem(this.todoLists[0], document.getElementById("folder-list").children[0]);
+    // if (document.getElementById("folder-list").children[0])
+    //   this.setSelectedItem(this.todoLists[0], document.getElementById("folder-list").children[0]);
   }
 
   render() {
@@ -112,6 +113,22 @@ export class TodoList {
   }
 
   deleteTodoItem(index) {
+    const todoItem = this.todoLists[index];
+
+    if (this.timer.activeItem) {
+      const task = todoItem.tasks.find((v) => v.id === this.timer.activeItem.id);
+      if (task) {
+        this.timer.stop();
+        this.taskList.clearHeaderTimerRender();
+        this.taskList.clearTaskTimerRender(task);
+      }
+    }
+    if (this.selectedItem.id === todoItem.id) {
+      this.taskList.clear();
+      this.selectedItem = null;
+      this.taskList = null;
+    }
+
     this.todoLists.splice(index, 1); // 선택한 목록을 삭제
     document.getElementById("folder-list").children[index].remove(); // 해당 항목만 삭제
   }

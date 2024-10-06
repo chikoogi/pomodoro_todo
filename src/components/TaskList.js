@@ -18,7 +18,15 @@ export class TaskList {
     };
   }
 
+  clear() {
+    document.getElementById("right-panel-wrapper").style.display = "none";
+    this.updateTaskTitle("");
+    const taskListElement = document.getElementById("task-list");
+    taskListElement.innerHTML = "";
+  }
+
   init() {
+    document.getElementById("right-panel-wrapper").style.display = "block";
     this.updateTaskTitle(this.todoTitle);
     this.render();
   }
