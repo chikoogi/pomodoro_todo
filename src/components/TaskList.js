@@ -333,7 +333,7 @@ export class TaskList {
     // 입력 뷰 보여주기
     taskInputView.style.display = "block";
     taskInput.onfocus = () => {
-      if (taskInput.value === DEFAULT_INPUT_VALUE) taskInput.value = "";
+      if (!editTask) taskInput.value = "";
     };
 
     const saveBtn = document.getElementById("save-task-button");
