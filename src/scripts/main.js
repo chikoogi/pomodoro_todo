@@ -20,10 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 로컬 스토리지에서 데이터를 불러옴
   let todoLists = loadFromLocalStorage();
-
   const todoListComponent = new TodoList(todoLists);
 
-  todoListComponent.init();
   // 할 일 목록 렌더링
-  // renderTodoLists(todoLists);
+  todoListComponent.init();
 });

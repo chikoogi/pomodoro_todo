@@ -2,6 +2,7 @@ import { Timer } from "./Timer.js";
 import { TaskList } from "./TaskList.js";
 import IconMenu from "/src/assets/icon/menu_white.png";
 import IconClose from "/src/assets/icon/close_black.png";
+import { saveToLocalStorage } from "../tools/localStorage.js";
 
 export class TodoList {
   constructor(todoLists) {
@@ -131,18 +132,21 @@ export class TodoList {
 
     this.todoLists.splice(index, 1); // 선택한 목록을 삭제
     document.getElementById("folder-list").children[index].remove(); // 해당 항목만 삭제
+
+    saveToLocalStorage(this.todoLists);
   }
 
   addTodoItem(item, index) {
     this.todoLists.splice(index, 0, item);
     this.renderItem(item); // 목록만 추가하도록 변경
+    saveToLocalStorage(this.todoLists);
   }
 
   updateTodoItem(item) {
     const index = this.todoLists.findIndex((todo) => todo.id === item.id);
 
-    this.deleteTodoItem(index);
-    this.addTodoItem(item, index);
+    this.render();
+    saveToLocalStorage(this.todoLists);
   }
 
   showInputView() {
