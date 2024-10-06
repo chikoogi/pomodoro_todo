@@ -93,11 +93,7 @@ export class TaskList {
         const countDownTimerEl = document.createElement("div");
         taskItemRight.appendChild(countDownTimerEl);
         countDownTimerEl.className = "countdown-timer";
-        if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
-          countDownTimerEl.style.display = "block";
-          countDownTimerEl.classList.add("timer");
-          countDownTimerEl.textContent = this.timer.el.textContent;
-        } else countDownTimerEl.style.display = "none";
+        countDownTimerEl.style.display = "none";
 
         const playBtnEl = document.createElement("button");
         taskItemRight.appendChild(playBtnEl);
@@ -175,6 +171,9 @@ export class TaskList {
         };
       }
 
+      /* Task 버튼 할일 실행 여부에 따라 조건부 렌더링 */
+      this.checkTaskTimerRender(task);
+
       const deleteBtnEl = document.createElement("button");
       taskItemRight.appendChild(deleteBtnEl);
       deleteBtnEl.innerHTML = `<img src=${IconClose}>`;
@@ -190,6 +189,29 @@ export class TaskList {
         this.render();
       };
     });
+  }
+
+  checkTaskTimerRender(task) {
+    const taskEl = document.getElementById(`task-${task.id}`);
+    if (!taskEl) return;
+    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer");
+    const taskPlayBtnEl = taskEl.querySelector(".play-btn");
+    const taskStopBtnEl = taskEl.querySelector(".stop-btn");
+    if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
+      taskCountDownTimerEl.style.display = "block";
+      taskCountDownTimerEl.classList.add("timer");
+      taskCountDownTimerEl.textContent = this.timer.el.textContent;
+
+      taskStopBtnEl.style.display = "block";
+      taskPlayBtnEl.style.display = "none";
+    } else {
+      if (taskCountDownTimerEl) {
+        taskCountDownTimerEl.style.display = "none";
+        taskCountDownTimerEl.classList.remove("timer");
+      }
+      if (taskPlayBtnEl) taskPlayBtnEl.style.display = "block";
+      if (taskStopBtnEl) taskStopBtnEl.style.display = "none";
+    }
   }
 
   startTaskTimerRender(task) {
