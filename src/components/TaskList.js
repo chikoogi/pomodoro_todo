@@ -193,11 +193,11 @@ export class TaskList {
   }
 
   startTaskTimerRender(task) {
-    const taskCountDownTimerEl = document
-      .getElementById(`task-${task.id}`)
-      .querySelector(".countdown-timer");
-    const taskPlayBtnEl = document.getElementById(`task-${task.id}`).querySelector(".play-btn");
-    const taskStopBtnEl = document.getElementById(`task-${task.id}`).querySelector(".stop-btn");
+    const taskEl = document.getElementById(`task-${task.id}`);
+    if (!taskEl) return;
+    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer");
+    const taskPlayBtnEl = taskEl.querySelector(".play-btn");
+    const taskStopBtnEl = taskEl.querySelector(".stop-btn");
 
     taskCountDownTimerEl.style.display = "block";
     taskCountDownTimerEl.classList.add("timer");
@@ -245,11 +245,11 @@ export class TaskList {
   }
 
   clearTaskTimerRender(task) {
-    const playBtnEl = document.getElementById(`task-${task.id}`).querySelector(".play-btn");
-    const stopBtnEl = document.getElementById(`task-${task.id}`).querySelector(".stop-btn");
-    const countDownTimerEl = document
-      .getElementById(`task-${task.id}`)
-      .querySelector(".countdown-timer");
+    const taskEl = document.getElementById(`task-${task.id}`);
+    if (!taskEl) return;
+    const playBtnEl = taskEl.querySelector(".play-btn");
+    const stopBtnEl = taskEl.querySelector(".stop-btn");
+    const countDownTimerEl = taskEl.querySelector(".countdown-timer");
 
     if (playBtnEl) playBtnEl.style.display = "block";
     if (stopBtnEl) stopBtnEl.style.display = "none";

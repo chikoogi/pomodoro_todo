@@ -33,15 +33,20 @@ export class TodoList {
     folderListElement.innerHTML = ""; // 기존 목록 초기화
 
     this.todoLists.forEach((item, itemIdx) => {
-      this.renderItem(item, itemIdx);
+      this.renderItem(item);
     });
   }
 
-  renderItem(item, itemIdx) {
+  renderItem(item) {
     const folderListElement = document.getElementById("folder-list");
     const folderEl = document.createElement("div");
+    const itemIdx = this.todoLists.findIndex((v) => v.id === item.id);
 
-    folderListElement.insertBefore(folderEl, folderListElement.children[itemIdx]);
+    if (itemIdx === -1) {
+      folderListElement.appendChild(folderEl);
+    } else {
+      folderListElement.insertBefore(folderEl, folderListElement.children[itemIdx]);
+    }
 
     folderEl.className = "folder-item";
     if (this.selectedItem && this.selectedItem.id === item.id) folderEl.classList.add("selected");
@@ -73,7 +78,8 @@ export class TodoList {
       const chk = confirm("삭제 하시겠습니까?");
       if (chk) {
         e.stopPropagation();
-        this.deleteTodoItem(itemIdx); // 삭제 함수 호출
+        const idx = this.todoLists.findIndex((v) => v.id === item.id);
+        this.deleteTodoItem(idx); // 삭제 함수 호출
       }
     };
 
@@ -112,7 +118,7 @@ export class TodoList {
 
   addTodoItem(item, index) {
     this.todoLists.splice(index, 0, item);
-    this.renderItem(item, index); // 목록만 추가하도록 변경
+    this.renderItem(item); // 목록만 추가하도록 변경
   }
 
   updateTodoItem(item) {
