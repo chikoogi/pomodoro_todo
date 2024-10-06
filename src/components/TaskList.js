@@ -277,6 +277,8 @@ export class TaskList {
     const taskInput = document.getElementById("task-input");
     const pomodoroInput = document.getElementById("pomodoro-input");
 
+    const DEFAULT_INPUT_VALUE = "새로운 할 일 입력";
+
     pomodoroInput.onchange = (e) => {
       if (e.target.value > 60) pomodoroInput.value = 60;
       if (e.target.value < 1) pomodoroInput.value = 1;
@@ -288,7 +290,9 @@ export class TaskList {
 
     // 입력 뷰 보여주기
     taskInputView.style.display = "block";
-    taskInput.focus();
+    taskInput.onfocus = () => {
+      if (taskInput.value === DEFAULT_INPUT_VALUE) taskInput.value = "";
+    };
 
     const saveBtn = document.getElementById("save-task-button");
     saveBtn.onclick = () => {
