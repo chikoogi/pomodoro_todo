@@ -22,4 +22,12 @@ module.exports = {
   },
   ignorePatterns: ["dist/"], // dist 폴더 무시
   plugins: ["prettier"],
+  overrides: [
+    {
+      "files": ["tests/**/*"],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 };
