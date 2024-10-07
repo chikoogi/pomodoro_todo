@@ -53,6 +53,7 @@ export class TaskList {
       const checkboxEl = document.createElement("input");
       taskItemLeft.appendChild(checkboxEl);
       checkboxEl.type = "checkbox";
+      checkboxEl.className = "checkbox";
       checkboxEl.checked = task.completed;
       checkboxEl.onchange = (e) => {
         this.tasks.splice(taskIdx, 1, {
@@ -76,11 +77,12 @@ export class TaskList {
       };
 
       const nameEl = document.createElement("span");
-      nameEl.innerText = task.name;
+      nameEl.textContent = task.name;
+      nameEl.className = "task-name";
 
       const timeEl = document.createElement("span");
       timeEl.className = "task-pomodoro-time";
-      timeEl.innerText = `(${task.pomodoroTime}m)`;
+      timeEl.textContent = `(${task.pomodoroTime}m)`;
 
       const imgEl = document.createElement("img");
       imgEl.src = IconTimer;
@@ -89,7 +91,7 @@ export class TaskList {
 
       const countEl = document.createElement("span");
       countEl.className = "task-pomodoro-count";
-      countEl.innerText = task.pomodoroCount;
+      countEl.textContent = task.pomodoroCount;
 
       textEl.append(nameEl, timeEl, imgEl, countEl);
 
@@ -319,11 +321,9 @@ export class TaskList {
     const taskInput = document.getElementById("task-input");
     const pomodoroInput = document.getElementById("pomodoro-input");
 
-    const DEFAULT_INPUT_VALUE = "새로운 할 일 입력";
-
     pomodoroInput.onchange = (e) => {
-      if (e.target.value > 60) pomodoroInput.value = 60;
-      if (e.target.value < 1) pomodoroInput.value = 1;
+      if (+e.target.value > 60) pomodoroInput.value = 60;
+      if (+e.target.value < 1) pomodoroInput.value = 1;
     };
 
     // 초기화

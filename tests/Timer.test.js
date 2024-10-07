@@ -1,8 +1,6 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { Timer } from "../src/components/Timer.js";
 
-/*jest.advanceTimersByTime(60000);*/
-
 describe("Timer", () => {
   let timer, initState;
 
