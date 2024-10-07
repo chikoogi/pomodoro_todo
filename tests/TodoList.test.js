@@ -11,12 +11,13 @@ describe("TodoList", () => {
     const html = fs.readFileSync(path.resolve(__dirname, "../index.html"), "utf8");
     document.body.innerHTML = html;
 
-    mockTodoLists = TODO_LIST;
+    mockTodoLists = [...TODO_LIST];
     todoList = new TodoList(mockTodoLists);
-    todoList.init();
   });
 
   test("Todo 목록이 렌더링 되는지 확인", () => {
+    todoList.init();
+
     const folderItems = document.querySelectorAll(".folder-item");
 
     expect(folderItems.length).toBe(TODO_LIST.length);
@@ -27,6 +28,8 @@ describe("TodoList", () => {
   });
 
   test("Todo 항목 추가 확인", () => {
+    todoList.init();
+
     const folderInputView = document.getElementById("folder-input-view");
 
     const addBtn = document.getElementById("add-folder-button");
@@ -53,19 +56,28 @@ describe("TodoList", () => {
   });
 
   test("Todo 항목 삭제 확인 - confirm 확인", () => {
+    todoList.init();
+
     jest.spyOn(window, "confirm").mockReturnValueOnce(true);
 
     const folderItems = document.querySelectorAll(".folder-item");
+
     const deleteBtn = folderItems[0].querySelector("button");
     deleteBtn.click();
+
+    console.log(mockTodoLists, folderItems.length);
 
     expect(folderItems.length).toBe(TODO_LIST.length - 1);
   });
 
   test("Todo 항목 삭제 확인 - confirm 취소", () => {
+    todoList.init();
+
     jest.spyOn(window, "confirm").mockReturnValueOnce(false);
 
     const folderItems = document.querySelectorAll(".folder-item");
+    console.log(folderItems.length);
+
     const deleteBtn = folderItems[0].querySelector("button");
     deleteBtn.click();
 
