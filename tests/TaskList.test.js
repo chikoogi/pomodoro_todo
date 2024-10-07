@@ -11,12 +11,7 @@ import { TodoList } from "../src/components/TodoList.js";
 * */
 
 describe("TaskList", () => {
-  let todoList,
-    mockTodoLists,
-    html,
-    mockLength = TODO_LIST.length,
-    taskList,
-    selectedItem;
+  let todoList, mockTodoLists, html;
 
   beforeEach(() => {
     html = fs.readFileSync(path.resolve(__dirname, "../index.html"), "utf8");

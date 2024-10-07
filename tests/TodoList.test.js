@@ -5,10 +5,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 describe("TodoList", () => {
-  let todoList,
-    mockTodoLists,
-    html,
-    mockLength = TODO_LIST.length;
+  let todoList, mockTodoLists, html;
 
   beforeEach(() => {
     html = fs.readFileSync(path.resolve(__dirname, "../index.html"), "utf8");
