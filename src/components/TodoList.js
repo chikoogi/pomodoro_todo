@@ -1,7 +1,7 @@
 import { Timer } from "./Timer.js";
 import { TaskList } from "./TaskList.js";
-import IconMenu from "./../assets/icon/menu_white.png";
-import IconClose from "./../assets/icon/close_black.png";
+import IconMenu from "/static/images/menu_white.png";
+import IconClose from "/static/images/close_black.png";
 import { saveToLocalStorage } from "../tools/localStorage.js";
 
 export class TodoList {
