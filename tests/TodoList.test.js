@@ -92,11 +92,11 @@ describe("TodoList", () => {
 
     expect(todoList.selectedItem.name).toBe(TODO_LIST[0].name);
     expect(todoList.selectedItem.tasks.length).toBe(TODO_LIST[0].tasks.length);
-    expect(folderItems[0].className).toContain("selected");
+    expect(folderItems[0].classList.contains("selected")).toBe(true);
 
     folderItems[1].onclick();
     expect(todoList.selectedItem.name).toBe(TODO_LIST[1].name);
     expect(todoList.selectedItem.tasks.length).toBe(TODO_LIST[1].tasks.length);
-    expect(folderItems[1].className).toContain("selected");
+    expect(folderItems[1].classList.contains("selected")).toBe(true);
   });
 });
