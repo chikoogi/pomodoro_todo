@@ -21,14 +21,10 @@ export default {
       },
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              name: "images/[name].[ext]", // 파일 경로 및 해시, 확장자, 쿼리 스트링 설정
-            },
-          },
-        ],
+        type: "asset/resource", // webpack 5의 방식: 파일을 자동으로 resource로 취급하여 복사
+        generator: {
+          filename: "images/[name][ext]", // 빌드 시 이미지 파일의 경로와 이름 형식 지정
+        },
       },
       {
         test: /\.js$/,
