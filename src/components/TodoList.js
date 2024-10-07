@@ -124,7 +124,7 @@ export class TodoList {
         this.taskList.clearTaskTimerRender(task);
       }
     }
-    if (this.selectedItem.id === todoItem.id) {
+    if (this.selectedItem && this.selectedItem.id === todoItem.id) {
       this.taskList.clear();
       this.selectedItem = null;
       this.taskList = null;
