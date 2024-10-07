@@ -40,9 +40,8 @@ export class Timer {
 
   start(onComplete) {
     if (this.interval) {
-      // alert("이미 실행중인 할일이 있습니다.");
       return;
-    } // 이미 실행 중인 타이머가 있을 경우 무시
+    }
 
     this.render();
     this.interval = setInterval(() => {
