@@ -35,13 +35,13 @@ describe("TaskList", () => {
     taskList.init();
   });
 
-  test("Task 타이틀이 출력되는지 확인", () => {
+  test("Task 타이틀이 출력", () => {
     const rightPanelEl = document.getElementById("right-panel-wrapper");
     expect(rightPanelEl.style.display).toBe("block");
     expect(document.getElementById("task-list-title").textContent).toBe(mockTitle);
   });
 
-  test("Task 목록이 렌더링 되는지 확인", () => {
+  test("Task 목록이 렌더링", () => {
     const taskItems = document.querySelectorAll(".task-item");
     expect(taskItems.length).toBe(mockTasks.length);
     taskItems.forEach((taskItem, index) => {
@@ -57,6 +57,8 @@ describe("TaskList", () => {
   });
 
   test("할일 추가", () => {
+    const tasksTotalCount = taskList.tasks.length;
+
     const addTaskBtn = document.getElementById("add-task-button");
     addTaskBtn.click();
 
@@ -70,9 +72,14 @@ describe("TaskList", () => {
     const saveBtn = document.getElementById("save-task-button");
     saveBtn.click();
 
-    // 할 일 목록 확인
+    /* 상단 총 갯수 렌더링 */
+    expect(document.getElementById("pomodoro-total").textContent).toBe(
+      (tasksTotalCount + 1).toString(),
+    );
+
+    /* 할 일 목록 확인*/
     const taskItems = document.querySelectorAll(".task-item");
-    expect(taskItems.length).toBe(mockTasks.length + 1); // 항목이 추가되었는지 확인
+    expect(taskItems.length).toBe(tasksTotalCount + 1);
     expect(taskItems[taskItems.length - 1].querySelector(".checkbox").checked).toBe(false);
     expect(taskItems[taskItems.length - 1].querySelector(".task-name").textContent).toBe(
       taskInput.value,
@@ -84,11 +91,13 @@ describe("TaskList", () => {
       taskItems[taskItems.length - 1].querySelector(".task-pomodoro-count").textContent,
     ).toContain("0");
 
+    expect(taskList.tasks.length).toBe(tasksTotalCount + 1);
     expect(taskList.tasks[taskList.tasks.length - 1].completed).toBe(false);
     expect(taskList.tasks[taskList.tasks.length - 1].name).toBe(taskInput.value);
     expect(taskList.tasks[taskList.tasks.length - 1].pomodoroTime).toBe(+pomodoroInput.value);
     expect(taskList.tasks[taskList.tasks.length - 1].pomodoroCount).toBe(0);
   });
+
   test("할일 수정", () => {
     const taskItems = document.querySelectorAll(".task-item");
     let taskItem = document.querySelectorAll(".task-item")[selectedIdx];
@@ -129,6 +138,7 @@ describe("TaskList", () => {
       taskList.tasks[selectedIdx].pomodoroCount,
     );
   });
+
   test("할일 삭제", () => {
     const selectedIdx = 0;
     let taskItems = document.querySelectorAll(".task-item");
@@ -138,8 +148,9 @@ describe("TaskList", () => {
     taskItems = document.querySelectorAll(".task-item");
     expect(taskItems.length).toBe(mockTasks.length - 1); // 항목이 삭제되었는지 확인
   });
+
   test("할일 완료 상태 변경", () => {
-    const selectedIdx = 0;
+    const tasksCompletedCount = taskList.tasks.filter((v) => v.completed).length;
 
     const taskItems = document.querySelectorAll(".task-item");
     const checkbox = taskItems[selectedIdx].querySelector("input[type='checkbox']");
@@ -149,9 +160,14 @@ describe("TaskList", () => {
     checkbox.dispatchEvent(changeEvent); // 체크박스 상태 변경 이벤트 발생
 
     expect(taskList.tasks[selectedIdx].completed).toBe(checkbox.checked);
+
+    /* 상단 할일 완료 갯수 렌더링 */
+    expect(document.getElementById("pomodoro-current").textContent).toBe(
+      (tasksCompletedCount + 1).toString(),
+    );
   });
 
-  test("타이머 시작 및 종료 테스트", () => {
+  test("타이머 시작 및 종료", () => {
     jest.useFakeTimers();
 
     const taskItems = document.querySelectorAll(".task-item");
@@ -178,7 +194,7 @@ describe("TaskList", () => {
     expect(taskList.tasks[selectedIdx].pomodoroCount).toBe(pomodoroCount + 1);
   });
 
-  test("타이머 진행 중 다른 할일 클릭시 테스트", () => {
+  test("타이머 진행 중 다른 할일 클릭시", () => {
     const alertMock = jest.spyOn(window, "alert").mockImplementation(() => {});
 
     const taskItems = document.querySelectorAll(".task-item");
@@ -193,7 +209,7 @@ describe("TaskList", () => {
     alertMock.mockRestore();
   });
 
-  test("타이머 시작 및 정지 테스트", () => {
+  test("타이머 시작 및 정지", () => {
     jest.useFakeTimers();
 
     const taskItems = document.querySelectorAll(".task-item");

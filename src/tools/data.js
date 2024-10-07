@@ -22,7 +22,7 @@ export let TODO_LIST = [
         name: "B 보고서 작성",
         pomodoroTime: 12,
         pomodoroCount: 2,
-        completed: true,
+        completed: false,
       },
       {
         id: "191",

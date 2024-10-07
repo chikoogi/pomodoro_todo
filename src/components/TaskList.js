@@ -73,7 +73,7 @@ export class TaskList {
       taskItemLeft.appendChild(textEl);
       textEl.className = "task-text-wrapper";
       textEl.onclick = () => {
-        this.showTaskInputView({ task, taskIdx });
+        if (!task.completed) this.showTaskInputView({ task, taskIdx });
       };
 
       const nameEl = document.createElement("span");
