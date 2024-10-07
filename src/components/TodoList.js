@@ -95,7 +95,8 @@ export class TodoList {
   }
 
   setSelectedItem(item, folderEl) {
-    const selectedEl = document.getElementById("folder-list").querySelector(".selected");
+    const folderListEl = document.getElementById("folder-list");
+    const selectedEl = folderListEl.querySelector(".selected");
     if (selectedEl) {
       document
         .getElementById("folder-list")
