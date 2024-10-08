@@ -99,7 +99,7 @@ export class TodoList {
     countBtn.textContent = item.tasks.length.toString();
   }
 
-  setSelectedItem(item, folderEl) {
+  setSelectedItem(item: TodoItem, folderEl: HTMLElement) {
     const folderListEl = document.getElementById("folder-list") as HTMLDivElement;
     const selectedEl = folderListEl.querySelector(".selected") as HTMLDivElement;
     if (selectedEl) {
@@ -113,21 +113,21 @@ export class TodoList {
     this.taskList.init();
   }
 
-  addTodoItem(item, index) {
-    this.todoLists.splice(index, 0, item);
+  addTodoItem(item: TodoItem) {
+    this.todoLists.splice(this.todoLists.length, 0, item);
     this.renderItem(item);
     saveToLocalStorage(this.todoLists);
   }
 
-  deleteTodoItem(todoItem) {
-    const itemIdx = this.todoLists.findIndex((v) => v.id === todoItem.id);
+  deleteTodoItem(item: TodoItem) {
+    const itemIdx = this.todoLists.findIndex((v) => v.id === item.id);
     if (itemIdx === -1) return;
     this.todoLists.splice(itemIdx, 1);
 
     /* 삭제하는 목록 중에 타이머 진행중인 할일 존재 유무*/
     const timerActiveItem = this.timer.activeItem;
     if (timerActiveItem) {
-      const task = todoItem.tasks.find((v) => v.id === timerActiveItem.id);
+      const task = item.tasks.find((v) => v.id === timerActiveItem.id);
       if (task) {
         /* 있으면 타이머 정지 */
         this.timer.stop();
@@ -139,7 +139,7 @@ export class TodoList {
     }
 
     /* 삭제하는 목록이 선택한 목록일 경우 할일 목록 초기화 */
-    if (this.selectedItem && this.selectedItem.id === todoItem.id) {
+    if (this.selectedItem && this.selectedItem.id === item.id) {
       if (this.taskList) this.taskList.clear();
       this.selectedItem = null;
       this.taskList = null;
@@ -153,8 +153,7 @@ export class TodoList {
     saveToLocalStorage(this.todoLists);
   }
 
-  updateTodoItem(item) {
-    console.log(this.todoLists, item);
+  updateTodoItem(item: TodoItem) {
     const idx = this.todoLists.findIndex((todo) => todo.id === item.id);
     this.todoLists.splice(idx, 1, item);
 
@@ -186,7 +185,7 @@ export class TodoList {
           name: newFolderName,
           tasks: [],
         };
-        this.addTodoItem(newTodo, this.todoLists.length); // 목록 추가
+        this.addTodoItem(newTodo); // 목록 추가
 
         folderInputView.style.display = "none";
         folderInput.onkeydown = null;

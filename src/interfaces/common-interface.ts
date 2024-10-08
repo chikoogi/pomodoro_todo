@@ -1,10 +1,10 @@
 export interface TodoItem {
   id: string;
   name: string;
-  tasks: Task[];
+  tasks: TaskItem[];
 }
 
-export interface Task {
+export interface TaskItem {
   id: string;
   name: string;
   pomodoroTime: number;

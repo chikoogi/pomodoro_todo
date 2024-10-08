@@ -166,6 +166,13 @@ button.btn-img > img {
     height: 30px;
 }
 
+#right-panel-wrapper .task-count-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
 .right-panel-title {
     display: flex;
     justify-content: space-between;

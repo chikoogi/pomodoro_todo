@@ -2,15 +2,15 @@ import IconTimer from "/static/images/timer_white.png";
 import IconPlay from "/static/images/play_black.png";
 import IconStop from "/static/images/stop_black.png";
 import IconClose from "/static/images/close_black.png";
-import { Task } from "../interfaces/common-interface";
+import { TaskItem } from "../interfaces/common-interface";
 import { Timer } from "./Timer";
 
 export class TaskList {
   private todoTitle: string;
-  private tasks: Task[];
+  private tasks: TaskItem[];
   private timer: Timer;
   private updateTodoItem: () => void;
-  constructor(todoTitle: string, tasks: Task[], timer: Timer, updateTodoItem: () => void) {
+  constructor(todoTitle: string, tasks: TaskItem[], timer: Timer, updateTodoItem: () => void) {
     this.todoTitle = todoTitle;
     this.tasks = tasks;
     this.timer = timer;
@@ -53,7 +53,7 @@ export class TaskList {
     });
   }
 
-  renderTaskItem(task: Task, target: HTMLElement | null = null) {
+  renderTaskItem(task: TaskItem, target: HTMLElement | null = null) {
     const taskListElement = document.getElementById("task-list") as HTMLDivElement;
 
     let taskItemEl;
@@ -330,7 +330,12 @@ export class TaskList {
   }
 
   /* timer start 실행시 헤더 렌더링 변경 */
-  startHeaderTimerRender(task, onPause, onStop, onRestart) {
+  startHeaderTimerRender(
+    task: TaskItem,
+    onPause: () => void,
+    onStop: () => void,
+    onRestart: () => void,
+  ) {
     const headerTitle = document.getElementById("header-title") as HTMLDivElement;
     const headerTimer = document.getElementById("header-timer") as HTMLDivElement;
     const todoTitle = document.getElementById("header-todo-title") as HTMLDivElement;
@@ -382,7 +387,7 @@ export class TaskList {
     taskCompleteCount.textContent = this.tasks.filter((task) => task.completed).length.toString();
   }
 
-  showTaskInputView(editTask?: Task) {
+  showTaskInputView(editTask?: TaskItem) {
     const taskInputView = document.getElementById("task-input-view") as HTMLDivElement;
     const taskInput = document.getElementById("task-input") as HTMLInputElement;
     const pomodoroInput = document.getElementById("pomodoro-input") as HTMLInputElement;
