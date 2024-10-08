@@ -253,9 +253,9 @@ export class TaskList {
       this.clearTaskTimerRender(task);
     }
 
-    const taskListEl = document.getElementById("task-list") as HTMLDivElement;
-    if (taskListEl.children[taskIdx]) {
-      taskListEl.children[taskIdx].remove();
+    const taskItemEl = document.getElementById(`task-${task.id}`) as HTMLDivElement;
+    if (taskItemEl) {
+      taskItemEl.remove();
     }
     this.updateTaskStatus();
     this.updateTodoItem();

@@ -54,6 +54,7 @@ export class TodoList {
     }
 
     folderItemEl.className = "folder-item";
+    folderItemEl.id = `todo-${item.id}`;
     folderItemEl.onclick = () => {
       this.setSelectedItem(item, folderItemEl);
     };
@@ -145,9 +146,9 @@ export class TodoList {
       this.taskList = null;
     }
 
-    const folderListEl = document.getElementById("folder-list") as HTMLDivElement;
-    if (folderListEl.children[itemIdx]) {
-      folderListEl.children[itemIdx].remove();
+    const todoItemEl = document.getElementById(`todo-${item.id}`) as HTMLDivElement;
+    if (todoItemEl) {
+      todoItemEl.remove();
     }
 
     saveToLocalStorage(this.todoLists);
@@ -157,10 +158,10 @@ export class TodoList {
     const idx = this.todoLists.findIndex((todo) => todo.id === item.id);
     this.todoLists.splice(idx, 1, item);
 
-    const folderListEl = document.getElementById(`folder-list`) as HTMLDivElement;
-    if (folderListEl) {
-      (folderListEl.querySelector(".todo-li-name") as HTMLElement).textContent = item.name;
-      (folderListEl.querySelector(".todo-task-count") as HTMLElement).textContent =
+    const todoItemEl = document.getElementById(`todo-${item.id}`) as HTMLDivElement;
+    if (todoItemEl) {
+      (todoItemEl.querySelector(".todo-li-name") as HTMLElement).textContent = item.name;
+      (todoItemEl.querySelector(".todo-task-count") as HTMLElement).textContent =
         item.tasks.length.toString();
     }
 
