@@ -4,10 +4,12 @@ https://velog.io/@hannatoo/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%99%98%EC%9E%
 */
 
 module.exports = {
+  preset: "ts-jest",
   testEnvironment: "jsdom",
   moduleFileExtensions: ["js", "json", "jsx", "ts", "tsx", "json"],
   transform: {
     "^.+\\.(js|jsx)?$": "babel-jest",
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",

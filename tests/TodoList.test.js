@@ -1,4 +1,4 @@
-import { TodoList } from "../src/components/TodoList.js";
+import { TodoList } from "../src/components/TodoList.ts";
 import { beforeEach, describe, test, expect, jest } from "@jest/globals";
 import { TODO_LIST } from "../src/tools/data.js";
 import * as fs from "node:fs";

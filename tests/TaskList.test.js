@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { TODO_LIST } from "../src/tools/data.js";
 import fs from "node:fs";
 import path from "node:path";
-import { Timer } from "../src/components/Timer.js";
-import { TaskList } from "../src/components/TaskList.js";
+import { Timer } from "../src/components/Timer.ts";
+import { TaskList } from "../src/components/TaskList.ts";
 import { getMMSSFormat } from "../src/tools/tools.js";
 
 /*  const alertMock = jest.spyOn(window, "alert").mockImplementation(() => {});

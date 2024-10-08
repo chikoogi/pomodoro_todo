@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from "@jest/globals";
-import { Timer } from "../src/components/Timer.js";
+import { Timer } from "../src/components/Timer.ts";
 
 describe("Timer", () => {
   let timer, initState;
