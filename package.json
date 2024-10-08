@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "dev": "webpack-dev-server --node-env development",
+    "build": "webpack --node-env production",
+    "test": "jest",
     "dev-vite": "vite",
     "build-vite": "vite build",
-    "preview-vite": "vite preview",
-    "test": "jest",
-    "dev": "webpack-dev-server --node-env development",
-    "build": "webpack --node-env production"
+    "preview-vite": "vite preview"
   },
   "devDependencies": {
     "@babel/core": "^7.25.7",

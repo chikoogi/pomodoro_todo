@@ -154,11 +154,12 @@ export class TodoList {
     const idx = this.todoLists.findIndex((todo) => todo.id === item.id);
     this.todoLists.splice(idx, 1, item);
 
-    const folderListEl = document.getElementById(`folder-list`);
+    /*const folderListEl = document.getElementById(`folder-list`);
     if (folderListEl) {
       folderListEl.querySelector(".todo-li-name").textContent = item.name;
       folderListEl.querySelector(".todo-task-count").textContent = item.tasks.length.toString();
-    }
+    }*/
+    this.render();
 
     saveToLocalStorage(this.todoLists);
   }
