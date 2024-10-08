@@ -13,15 +13,12 @@ export class TodoList {
   }
 
   init() {
-    const addBtn = document.getElementById("add-folder-button");
-    if (addBtn) {
-      document.getElementById("add-folder-button").onclick = () => {
-        const folderInputView = document.getElementById("folder-input-view");
-        if (folderInputView.style.display === "none") {
-          this.showInputView();
-        }
-      };
-    }
+    document.getElementById("add-folder-button").onclick = () => {
+      const folderInputView = document.getElementById("folder-input-view");
+      if (folderInputView.style.display === "none") {
+        this.showInputView();
+      }
+    };
 
     this.render();
 
@@ -34,32 +31,39 @@ export class TodoList {
     const folderListElement = document.getElementById("folder-list");
     folderListElement.innerHTML = ""; // 기존 목록 초기화
 
-    this.todoLists.forEach((item, itemIdx) => {
+    this.todoLists.forEach((item) => {
       this.renderItem(item);
     });
   }
 
-  renderItem(item) {
+  renderItem(item, target = null) {
     const folderListElement = document.getElementById("folder-list");
-    const folderEl = document.createElement("div");
-    const itemIdx = this.todoLists.findIndex((v) => v.id === item.id);
 
-    if (itemIdx === -1) {
-      folderListElement.appendChild(folderEl);
+    let folderItemEl;
+    if (target) {
+      folderItemEl = target;
+      folderItemEl.innerHTML = "";
     } else {
-      folderListElement.insertBefore(folderEl, folderListElement.children[itemIdx]);
+      folderItemEl = document.createElement("div");
+      folderListElement.appendChild(folderItemEl);
     }
 
-    folderEl.className = "folder-item";
-    if (this.selectedItem && this.selectedItem.id === item.id) folderEl.classList.add("selected");
+    folderItemEl.className = "folder-item";
+    folderItemEl.onclick = () => {
+      this.setSelectedItem(item, folderItemEl);
+    };
+
+    if (this.selectedItem && this.selectedItem.id === item.id)
+      folderItemEl.classList.add("selected");
+    else folderItemEl.classList.remove("selected");
 
     const titleItem = document.createElement("div");
-    folderEl.appendChild(titleItem);
+    folderItemEl.appendChild(titleItem);
     titleItem.className = "folder-item-title";
 
     const imgEl = document.createElement("img");
     titleItem.appendChild(imgEl);
-    imgEl.src = IconMenu;
+    imgEl.src = `${IconMenu}`;
     imgEl.width = 20;
     imgEl.height = 20;
 
@@ -69,7 +73,7 @@ export class TodoList {
     textItem.textContent = item.name;
 
     const btnItem = document.createElement("div");
-    folderEl.appendChild(btnItem);
+    folderItemEl.appendChild(btnItem);
     btnItem.className = "todo-li-btn";
 
     const deleteBtn = document.createElement("button");
@@ -80,18 +84,14 @@ export class TodoList {
       const chk = confirm("삭제 하시겠습니까?");
       if (chk) {
         e.stopPropagation();
-        const idx = this.todoLists.findIndex((v) => v.id === item.id);
-        this.deleteTodoItem(idx); // 삭제 함수 호출
+        this.deleteTodoItem(item); // 삭제 함수 호출
       }
     };
 
     const countBtn = document.createElement("span");
     btnItem.appendChild(countBtn);
+    countBtn.className = "todo-task-count";
     countBtn.textContent = item.tasks.length.toString();
-
-    folderEl.onclick = () => {
-      this.setSelectedItem(item, folderEl);
-    };
   }
 
   setSelectedItem(item, folderEl) {
@@ -114,39 +114,52 @@ export class TodoList {
     this.taskList.init();
   }
 
-  deleteTodoItem(index) {
-    const todoItem = this.todoLists[index];
+  addTodoItem(item, index) {
+    this.todoLists.splice(index, 0, item);
+    this.renderItem(item);
+    saveToLocalStorage(this.todoLists);
+  }
 
+  deleteTodoItem(todoItem) {
+    const itemIdx = this.todoLists.findIndex((v) => v.id === todoItem.id);
+    if (itemIdx === -1) return;
+    this.todoLists.splice(itemIdx, 1); // 선택한 목록을 삭제
+
+    /* 삭제하는 목록 중에 타이머 진행중인 할일 존재 유무*/
     if (this.timer.activeItem) {
       const task = todoItem.tasks.find((v) => v.id === this.timer.activeItem.id);
       if (task) {
+        /* 있으면 타이머 정지 */
         this.timer.stop();
         this.taskList.clearHeaderTimerRender();
         this.taskList.clearTaskTimerRender(task);
       }
     }
+
+    /* 삭제하는 목록이 선택한 목록일 경우 할일 목록 초기화 */
     if (this.selectedItem && this.selectedItem.id === todoItem.id) {
       this.taskList.clear();
       this.selectedItem = null;
       this.taskList = null;
     }
 
-    this.todoLists.splice(index, 1); // 선택한 목록을 삭제
-    document.getElementById("folder-list").children[index].remove(); // 해당 항목만 삭제
+    if (document.getElementById("folder-list").children[itemIdx]) {
+      document.getElementById("folder-list").children[itemIdx].remove();
+    }
 
-    saveToLocalStorage(this.todoLists);
-  }
-
-  addTodoItem(item, index) {
-    this.todoLists.splice(index, 0, item);
-    this.renderItem(item); // 목록만 추가하도록 변경
     saveToLocalStorage(this.todoLists);
   }
 
   updateTodoItem(item) {
-    const index = this.todoLists.findIndex((todo) => todo.id === item.id);
+    const idx = this.todoLists.findIndex((todo) => todo.id === item.id);
+    this.todoLists.splice(idx, 1, item);
 
-    this.render();
+    const folderListEl = document.getElementById(`folder-list`);
+    if (folderListEl) {
+      folderListEl.querySelector(".todo-li-name").textContent = item.name;
+      folderListEl.querySelector(".todo-task-count").textContent = item.tasks.length.toString();
+    }
+
     saveToLocalStorage(this.todoLists);
   }
 

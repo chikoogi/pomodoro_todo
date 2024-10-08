@@ -73,7 +73,7 @@ describe("TaskList", () => {
     saveBtn.click();
 
     /* 상단 총 갯수 렌더링 */
-    expect(document.getElementById("pomodoro-total").textContent).toBe(
+    expect(document.getElementById("task-total-count").textContent).toBe(
       (tasksTotalCount + 1).toString(),
     );
 
@@ -162,7 +162,7 @@ describe("TaskList", () => {
     expect(taskList.tasks[selectedIdx].completed).toBe(checkbox.checked);
 
     /* 상단 할일 완료 갯수 렌더링 */
-    expect(document.getElementById("pomodoro-current").textContent).toBe(
+    expect(document.getElementById("task-complete-count").textContent).toBe(
       (tasksCompletedCount + 1).toString(),
     );
   });

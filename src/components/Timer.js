@@ -32,6 +32,7 @@ export class Timer {
 
   setRemainingTime(minTime) {
     this.remainingTime = minTime * 60;
+    // this.remainingTime = 3;
   }
 
   is() {
