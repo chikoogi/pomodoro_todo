@@ -251,7 +251,7 @@ export class TaskList {
     this.tasks.splice(taskIdx, 1, task);
 
     if (document.getElementById(`task-${task.id}`)) {
-      this.renderTaskItem(task, document.getElementById("task-list").children[taskIdx]);
+      this.renderTaskItem(task, document.getElementById(`task-${task.id}`));
       this.updateTaskStatus();
     }
     this.updateTodoItem();
