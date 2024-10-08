@@ -250,7 +250,7 @@ export class TaskList {
     const taskIdx = this.tasks.findIndex((v) => v.id === task.id);
     this.tasks.splice(taskIdx, 1, task);
 
-    if (document.getElementById("task-list").children[taskIdx]) {
+    if (document.getElementById(`task-${task.id}`)) {
       this.renderTaskItem(task, document.getElementById("task-list").children[taskIdx]);
       this.updateTaskStatus();
     }
