@@ -1,6 +1,11 @@
 import { getMMSSFormat } from "../tools/tools.js";
+import { TaskItem } from "../interfaces/common-interface";
 
 export class Timer {
+  public remainingTime: number;
+  public interval: NodeJS.Timeout | null;
+  public activeItem: TaskItem | null;
+  public el: HTMLDivElement;
   constructor() {
     this.remainingTime = 25 * 60;
     this.interval = null;
@@ -39,7 +44,7 @@ export class Timer {
     return Boolean(this.interval);
   }
 
-  start(onComplete) {
+  start(onComplete: () => void) {
     if (this.interval) {
       return;
     }
@@ -47,7 +52,7 @@ export class Timer {
     this.render();
     this.interval = setInterval(() => {
       if (this.remainingTime <= 0) {
-        clearInterval(this.interval);
+        if (this.interval) clearInterval(this.interval);
         this.initState();
         if (onComplete) onComplete(); // 타이머 완료 후 호출
       } else {
@@ -58,11 +63,11 @@ export class Timer {
     }, 1000);
   }
 
-  restart(onComplete) {
+  restart(onComplete: () => void) {
     this.render();
     this.interval = setInterval(() => {
       if (this.remainingTime <= 0) {
-        clearInterval(this.interval);
+        if (this.interval) clearInterval(this.interval);
         this.initState();
         if (onComplete) onComplete(); // 타이머 완료 후 호출
       } else {

@@ -28,12 +28,22 @@ export default {
       },
       {
         test: /\.js$/,
-        exclude: /(node_modules|pages)/,
+        exclude: /(node_modules)/,
         use: {
           loader: "babel-loader",
         },
       },
+      {
+        test: /\.ts$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: "ts-loader",
+        },
+      },
     ],
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
   },
   mode: process.env.NODE_ENV,
   plugins: [

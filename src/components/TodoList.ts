@@ -1,10 +1,15 @@
-import { Timer } from "./Timer.js";
-import { TaskList } from "./TaskList.js";
 import IconMenu from "/static/images/menu_white.png";
 import IconClose from "/static/images/close_black.png";
 import { saveToLocalStorage } from "../tools/localStorage.js";
+import { TodoItem } from "../interfaces/common-interface";
+import { Timer } from "./Timer";
+import { TaskList } from "./TaskList";
 
 export class TodoList {
+  private timer: Timer;
+  private todoLists: TodoItem[];
+  private selectedItem: TodoItem | null;
+  private taskList: TaskList | null;
   constructor(todoLists) {
     this.timer = new Timer();
     this.todoLists = todoLists;
@@ -13,8 +18,8 @@ export class TodoList {
   }
 
   init() {
-    document.getElementById("add-folder-button").onclick = () => {
-      const folderInputView = document.getElementById("folder-input-view");
+    (document.getElementById("add-folder-button") as HTMLButtonElement).onclick = () => {
+      const folderInputView = document.getElementById("folder-input-view") as HTMLDivElement;
       if (folderInputView.style.display === "none") {
         this.showInputView();
       }
@@ -28,27 +33,28 @@ export class TodoList {
   }
 
   render() {
-    const folderListElement = document.getElementById("folder-list");
+    const folderListElement = document.getElementById("folder-list") as HTMLDivElement;
     folderListElement.innerHTML = ""; // 기존 목록 초기화
 
-    this.todoLists.forEach((item) => {
+    this.todoLists.forEach((item: TodoItem) => {
       this.renderItem(item);
     });
   }
 
-  renderItem(item, target = null) {
-    const folderListElement = document.getElementById("folder-list");
+  renderItem(item: TodoItem, target: HTMLElement | null = null) {
+    const folderListElement = document.getElementById("folder-list") as HTMLDivElement;
 
-    let folderItemEl;
+    let folderItemEl: HTMLElement;
     if (target) {
       folderItemEl = target;
       folderItemEl.innerHTML = "";
     } else {
-      folderItemEl = document.createElement("div");
+      folderItemEl = document.createElement("div") as HTMLDivElement;
       folderListElement.appendChild(folderItemEl);
     }
 
     folderItemEl.className = "folder-item";
+    folderItemEl.id = `todo-${item.id}`;
     folderItemEl.onclick = () => {
       this.setSelectedItem(item, folderItemEl);
     };
@@ -94,79 +100,77 @@ export class TodoList {
     countBtn.textContent = item.tasks.length.toString();
   }
 
-  setSelectedItem(item, folderEl) {
-    const folderListEl = document.getElementById("folder-list");
-    const selectedEl = folderListEl.querySelector(".selected");
+  setSelectedItem(item: TodoItem, folderEl: HTMLElement) {
+    const folderListEl = document.getElementById("folder-list") as HTMLDivElement;
+    const selectedEl = folderListEl.querySelector(".selected") as HTMLDivElement;
     if (selectedEl) {
-      document
-        .getElementById("folder-list")
-        .querySelector(".selected")
-        .classList.remove("selected");
+      folderListEl.querySelector(".selected")?.classList.remove("selected");
     }
     folderEl.classList.add("selected");
     this.selectedItem = item;
-    this.taskList = new TaskList(
-      item.name,
-      item.tasks,
-      this.timer,
-      this.updateTodoItem.bind(this, item),
+    this.taskList = new TaskList(item.name, item.tasks, this.timer, () =>
+      this.updateTodoItem(item),
     );
     this.taskList.init();
   }
 
-  addTodoItem(item, index) {
-    this.todoLists.splice(index, 0, item);
+  addTodoItem(item: TodoItem) {
+    this.todoLists.splice(this.todoLists.length, 0, item);
     this.renderItem(item);
     saveToLocalStorage(this.todoLists);
   }
 
-  deleteTodoItem(todoItem) {
-    const itemIdx = this.todoLists.findIndex((v) => v.id === todoItem.id);
+  deleteTodoItem(item: TodoItem) {
+    const itemIdx = this.todoLists.findIndex((v) => v.id === item.id);
     if (itemIdx === -1) return;
-    this.todoLists.splice(itemIdx, 1); // 선택한 목록을 삭제
+    this.todoLists.splice(itemIdx, 1);
 
     /* 삭제하는 목록 중에 타이머 진행중인 할일 존재 유무*/
-    if (this.timer.activeItem) {
-      const task = todoItem.tasks.find((v) => v.id === this.timer.activeItem.id);
+    const timerActiveItem = this.timer.activeItem;
+    if (timerActiveItem) {
+      const task = item.tasks.find((v) => v.id === timerActiveItem.id);
       if (task) {
         /* 있으면 타이머 정지 */
         this.timer.stop();
-        this.taskList.clearHeaderTimerRender();
-        this.taskList.clearTaskTimerRender(task);
+        if (this.taskList) {
+          this.taskList.clearHeaderTimerRender();
+          this.taskList.clearTaskTimerRender(task);
+        }
       }
     }
 
     /* 삭제하는 목록이 선택한 목록일 경우 할일 목록 초기화 */
-    if (this.selectedItem && this.selectedItem.id === todoItem.id) {
-      this.taskList.clear();
+    if (this.selectedItem && this.selectedItem.id === item.id) {
+      if (this.taskList) this.taskList.clear();
       this.selectedItem = null;
       this.taskList = null;
     }
 
-    if (document.getElementById("folder-list").children[itemIdx]) {
-      document.getElementById("folder-list").children[itemIdx].remove();
+    const todoItemEl = document.getElementById(`todo-${item.id}`) as HTMLDivElement;
+    if (todoItemEl) {
+      todoItemEl.remove();
     }
 
     saveToLocalStorage(this.todoLists);
   }
 
-  updateTodoItem(item) {
+  updateTodoItem(item: TodoItem) {
     const idx = this.todoLists.findIndex((todo) => todo.id === item.id);
     this.todoLists.splice(idx, 1, item);
 
-    /*const folderListEl = document.getElementById(`folder-list`);
-    if (folderListEl) {
-      folderListEl.querySelector(".todo-li-name").textContent = item.name;
-      folderListEl.querySelector(".todo-task-count").textContent = item.tasks.length.toString();
-    }*/
-    this.render();
+    const todoItemEl = document.getElementById(`todo-${item.id}`) as HTMLDivElement;
+    if (todoItemEl) {
+      (todoItemEl.querySelector(".todo-li-name") as HTMLElement).textContent = item.name;
+      (todoItemEl.querySelector(".todo-task-count") as HTMLElement).textContent =
+        item.tasks.length.toString();
+    }
 
     saveToLocalStorage(this.todoLists);
   }
 
   showInputView() {
-    const folderInputView = document.getElementById("folder-input-view");
-    let folderInput = document.getElementById("folder-input");
+    const folderInputView = document.getElementById("folder-input-view") as HTMLDivElement;
+    const folderInput = document.getElementById("folder-input") as HTMLInputElement;
 
     folderInput.value = "새로운 목록";
     folderInputView.style.display = "block";
@@ -182,7 +186,7 @@ export class TodoList {
           name: newFolderName,
           tasks: [],
         };
-        this.addTodoItem(newTodo, this.todoLists.length); // 목록 추가
+        this.addTodoItem(newTodo); // 목록 추가
 
         folderInputView.style.display = "none";
         folderInput.onkeydown = null;

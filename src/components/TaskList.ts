@@ -2,9 +2,15 @@ import IconTimer from "/static/images/timer_white.png";
 import IconPlay from "/static/images/play_black.png";
 import IconStop from "/static/images/stop_black.png";
 import IconClose from "/static/images/close_black.png";
+import { TaskItem } from "../interfaces/common-interface";
+import { Timer } from "./Timer";
 
 export class TaskList {
-  constructor(todoTitle, tasks, timer, updateTodoItem) {
+  private todoTitle: string;
+  private tasks: TaskItem[];
+  private timer: Timer;
+  private updateTodoItem: () => void;
+  constructor(todoTitle: string, tasks: TaskItem[], timer: Timer, updateTodoItem: () => void) {
     this.todoTitle = todoTitle;
     this.tasks = tasks;
     this.timer = timer;
@@ -12,15 +18,21 @@ export class TaskList {
   }
 
   clear() {
-    document.getElementById("right-panel-wrapper").style.display = "none";
+    const rightPanelWrapper = document.getElementById("right-panel-wrapper") as HTMLDivElement;
+    rightPanelWrapper.style.display = "none";
+
     this.updateTaskTitle("");
-    const taskListElement = document.getElementById("task-list");
+
+    const taskListElement = document.getElementById("task-list") as HTMLDivElement;
     taskListElement.innerHTML = "";
   }
 
   init() {
-    document.getElementById("right-panel-wrapper").style.display = "block";
-    document.getElementById("add-task-button").onclick = () => {
+    const rightPanelWrapper = document.getElementById("right-panel-wrapper") as HTMLDivElement;
+    rightPanelWrapper.style.display = "block";
+
+    const addTaskBtn = document.getElementById("add-task-button") as HTMLButtonElement;
+    addTaskBtn.onclick = () => {
       this.showTaskInputView();
     };
 
@@ -28,11 +40,12 @@ export class TaskList {
   }
 
   render() {
-    document.getElementById("task-input-view").style.display = "none";
+    const taskInputView = document.getElementById("task-input-view") as HTMLDivElement;
+    taskInputView.style.display = "none";
     this.updateTaskTitle(this.todoTitle);
     this.updateTaskStatus();
 
-    const taskListElement = document.getElementById("task-list");
+    const taskListElement = document.getElementById("task-list") as HTMLDivElement;
     taskListElement.innerHTML = "";
 
     this.tasks.forEach((task) => {
@@ -40,9 +53,8 @@ export class TaskList {
     });
   }
 
-  renderTaskItem(task, target = null) {
-    const taskListElement = document.getElementById("task-list");
-    const taskIdx = this.tasks.findIndex((v) => v.id === task.id);
+  renderTaskItem(task: TaskItem, target: HTMLElement | null = null) {
+    const taskListElement = document.getElementById("task-list") as HTMLDivElement;
 
     let taskItemEl;
     if (target) {
@@ -70,9 +82,10 @@ export class TaskList {
     checkboxEl.className = "checkbox";
     checkboxEl.checked = task.completed;
     checkboxEl.onchange = (e) => {
+      const target = e.target as HTMLInputElement;
       const editTask = {
         ...task,
-        completed: e.target.checked,
+        completed: target.checked,
       };
       this.updateTaskItem(editTask);
 
@@ -106,7 +119,7 @@ export class TaskList {
 
     const countEl = document.createElement("span");
     countEl.className = "task-pomodoro-count";
-    countEl.textContent = task.pomodoroCount;
+    countEl.textContent = task.pomodoroCount.toString();
 
     textWrapperEl.append(nameEl, timeEl, imgEl, countEl);
 
@@ -150,8 +163,8 @@ export class TaskList {
           () => {
             this.timer.pause();
 
-            const pauseBtn = document.getElementById("header-pause-button");
-            const playBtn = document.getElementById("header-play-button");
+            const pauseBtn = document.getElementById("header-pause-button") as HTMLButtonElement;
+            const playBtn = document.getElementById("header-play-button") as HTMLButtonElement;
 
             pauseBtn.style.display = "none";
             playBtn.style.display = "block";
@@ -174,8 +187,8 @@ export class TaskList {
               this.clearTaskTimerRender(task);
             });
 
-            const pauseBtn = document.getElementById("header-pause-button");
-            const playBtn = document.getElementById("header-play-button");
+            const pauseBtn = document.getElementById("header-pause-button") as HTMLButtonElement;
+            const playBtn = document.getElementById("header-play-button") as HTMLButtonElement;
 
             pauseBtn.style.display = "block";
             playBtn.style.display = "none";
@@ -239,8 +252,10 @@ export class TaskList {
       this.clearHeaderTimerRender();
       this.clearTaskTimerRender(task);
     }
-    if (document.getElementById("task-list").children[taskIdx]) {
-      document.getElementById("task-list").children[taskIdx].remove();
+
+    const taskItemEl = document.getElementById(`task-${task.id}`) as HTMLDivElement;
+    if (taskItemEl) {
+      taskItemEl.remove();
     }
     this.updateTaskStatus();
     this.updateTodoItem();
@@ -261,9 +276,9 @@ export class TaskList {
   checkTaskTimerRender(task) {
     const taskEl = document.getElementById(`task-${task.id}`);
     if (!taskEl) return;
-    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer");
-    const taskPlayBtnEl = taskEl.querySelector(".play-btn");
-    const taskStopBtnEl = taskEl.querySelector(".stop-btn");
+    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer") as HTMLDivElement;
+    const taskPlayBtnEl = taskEl.querySelector(".play-btn") as HTMLButtonElement;
+    const taskStopBtnEl = taskEl.querySelector(".stop-btn") as HTMLButtonElement;
     if (this.timer.activeItem && this.timer.activeItem.id === task.id) {
       if (taskCountDownTimerEl) {
         taskCountDownTimerEl.style.display = "block";
@@ -287,9 +302,9 @@ export class TaskList {
   startTaskTimerRender(task) {
     const taskEl = document.getElementById(`task-${task.id}`);
     if (!taskEl) return;
-    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer");
-    const taskPlayBtnEl = taskEl.querySelector(".play-btn");
-    const taskStopBtnEl = taskEl.querySelector(".stop-btn");
+    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer") as HTMLDivElement;
+    const taskPlayBtnEl = taskEl.querySelector(".play-btn") as HTMLButtonElement;
+    const taskStopBtnEl = taskEl.querySelector(".stop-btn") as HTMLButtonElement;
 
     if (taskCountDownTimerEl) {
       taskCountDownTimerEl.style.display = "block";
@@ -302,28 +317,33 @@ export class TaskList {
   clearTaskTimerRender(task) {
     const taskEl = document.getElementById(`task-${task.id}`);
     if (!taskEl) return;
-    const playBtnEl = taskEl.querySelector(".play-btn");
-    const stopBtnEl = taskEl.querySelector(".stop-btn");
-    const countDownTimerEl = taskEl.querySelector(".countdown-timer");
+    const taskCountDownTimerEl = taskEl.querySelector(".countdown-timer") as HTMLDivElement;
+    const taskPlayBtnEl = taskEl.querySelector(".play-btn") as HTMLButtonElement;
+    const taskStopBtnEl = taskEl.querySelector(".stop-btn") as HTMLButtonElement;
 
-    if (countDownTimerEl) {
-      countDownTimerEl.style.display = "none";
-      countDownTimerEl.classList.remove("timer");
+    if (taskCountDownTimerEl) {
+      taskCountDownTimerEl.style.display = "none";
+      taskCountDownTimerEl.classList.remove("timer");
     }
-    if (playBtnEl) playBtnEl.style.display = "block";
-    if (stopBtnEl) stopBtnEl.style.display = "none";
+    if (taskPlayBtnEl) taskPlayBtnEl.style.display = "block";
+    if (taskStopBtnEl) taskStopBtnEl.style.display = "none";
   }
 
   /* timer start 실행시 헤더 렌더링 변경 */
-  startHeaderTimerRender(task, onPause, onStop, onRestart) {
-    const headerTitle = document.getElementById("header-title");
-    const headerTimer = document.getElementById("header-timer");
-    const todoTitle = document.getElementById("header-todo-title");
-    const taskTitle = document.getElementById("header-task-title");
-    const remainTime = document.getElementById("header-remaining-time");
-    const pauseBtn = document.getElementById("header-pause-button");
-    const stopBtn = document.getElementById("header-stop-button");
-    const replayBtn = document.getElementById("header-play-button");
+  startHeaderTimerRender(
+    task: TaskItem,
+    onPause: () => void,
+    onStop: () => void,
+    onRestart: () => void,
+  ) {
+    const headerTitle = document.getElementById("header-title") as HTMLDivElement;
+    const headerTimer = document.getElementById("header-timer") as HTMLDivElement;
+    const todoTitle = document.getElementById("header-todo-title") as HTMLDivElement;
+    const taskTitle = document.getElementById("header-task-title") as HTMLDivElement;
+    const remainTime = document.getElementById("header-remaining-time") as HTMLDivElement;
+    const pauseBtn = document.getElementById("header-pause-button") as HTMLButtonElement;
+    const stopBtn = document.getElementById("header-stop-button") as HTMLButtonElement;
+    const replayBtn = document.getElementById("header-play-button") as HTMLButtonElement;
 
     headerTitle.style.display = "none";
     todoTitle.textContent = this.todoTitle;
@@ -345,9 +365,9 @@ export class TaskList {
   }
 
   clearHeaderTimerRender() {
-    const headerTitle = document.getElementById("header-title");
-    const headerTimer = document.getElementById("header-timer");
-    const remainTime = document.getElementById("header-remaining-time");
+    const headerTitle = document.getElementById("header-title") as HTMLDivElement;
+    const headerTimer = document.getElementById("header-timer") as HTMLDivElement;
+    const remainTime = document.getElementById("header-remaining-time") as HTMLDivElement;
     remainTime.classList.remove("timer");
 
     headerTitle.style.display = "block";
@@ -355,31 +375,32 @@ export class TaskList {
   }
 
   updateTaskTitle(title) {
-    const taskTitleElement = document.getElementById("task-list-title");
+    const taskTitleElement = document.getElementById("task-list-title") as HTMLDivElement;
     taskTitleElement.textContent = title;
   }
 
   updateTaskStatus() {
-    const taskTotalCount = document.getElementById("task-total-count");
+    const taskTotalCount = document.getElementById("task-total-count") as HTMLDivElement;
     taskTotalCount.textContent = this.tasks.length.toString();
 
-    const taskCompleteCount = document.getElementById("task-complete-count");
+    const taskCompleteCount = document.getElementById("task-complete-count") as HTMLDivElement;
     taskCompleteCount.textContent = this.tasks.filter((task) => task.completed).length.toString();
   }
 
-  showTaskInputView(editTask) {
-    const taskInputView = document.getElementById("task-input-view");
-    const taskInput = document.getElementById("task-input");
-    const pomodoroInput = document.getElementById("pomodoro-input");
+  showTaskInputView(editTask?: TaskItem) {
+    const taskInputView = document.getElementById("task-input-view") as HTMLDivElement;
+    const taskInput = document.getElementById("task-input") as HTMLInputElement;
+    const pomodoroInput = document.getElementById("pomodoro-input") as HTMLInputElement;
 
     pomodoroInput.onchange = (e) => {
-      if (+e.target.value > 60) pomodoroInput.value = 60;
-      if (+e.target.value < 1) pomodoroInput.value = 1;
+      const target = e.target as HTMLInputElement;
+      if (+target.value > 60) pomodoroInput.value = "60";
+      if (+target.value < 1) pomodoroInput.value = "1";
     };
 
     // 초기화
     taskInput.value = editTask ? editTask.name : "새로운 할 일 입력";
-    pomodoroInput.value = editTask ? editTask.pomodoroTime : 25;
+    pomodoroInput.value = editTask ? editTask.pomodoroTime.toString() : "25";
 
     // 입력 뷰 보여주기
     taskInputView.style.display = "block";
@@ -387,7 +408,7 @@ export class TaskList {
       if (!editTask) taskInput.value = "";
     };
 
-    const saveBtn = document.getElementById("save-task-button");
+    const saveBtn = document.getElementById("save-task-button") as HTMLButtonElement;
     saveBtn.onclick = () => {
       const taskName = taskInput.value.trim();
       const pomodoroTime = pomodoroInput.value.trim();
@@ -416,7 +437,7 @@ export class TaskList {
       taskInputView.style.display = "none";
     };
 
-    const cancelBtn = document.getElementById("cancel-task-button");
+    const cancelBtn = document.getElementById("cancel-task-button") as HTMLButtonElement;
     cancelBtn.onclick = () => {
       taskInputView.style.display = "none";
     };

@@ -1,6 +1,6 @@
 import "../styles/layout.css";
 import { loadFromLocalStorage } from "../tools/localStorage.js";
-import { TodoList } from "../components/TodoList.js";
+import { TodoList } from "../components/TodoList.ts";
 
 document.addEventListener("DOMContentLoaded", async () => {
   /* 레이아웃 렌더링 */
